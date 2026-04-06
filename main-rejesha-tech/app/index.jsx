@@ -55,7 +55,7 @@ const handleLogin = async () => {
 };
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <SafeAreaProvider>
     <StatusBar translucent={true}></StatusBar>
     <SafeAreaView style = {{flex: 1, backgroundColor: '#899b9eff'}}>
