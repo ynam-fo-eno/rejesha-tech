@@ -9,7 +9,7 @@ import { BASE_URL } from '../constants/config';
 
 const Home = () => {
   const [form, setForm] = useState({
-    usernaame: "",
+    username: "",
     password: "",
   });
 
@@ -20,7 +20,7 @@ const Home = () => {
   };
 
 const handleLogin = async () => {
-  if (!form.usernaame || !form.password) {
+  if (!form.username || !form.password) {
     Alert.alert("Error", "Please fill in all fields");
     return;
   }
@@ -30,7 +30,7 @@ const handleLogin = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        usernaame: form.usernaame,
+        username: form.username,
         password: form.password
       }),
     });
@@ -68,13 +68,13 @@ const handleLogin = async () => {
 
         <View style ={styles.form}>
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>usernaame</Text>
+            <Text style = {styles.inputLabel}>username</Text>
             <TextInput
               style = {styles.inputControl}
-              placeholder = "Enter usernaame(case sensitive!)"
+              placeholder = "Enter username(case sensitive!)"
               placeholderTextColor= "#929292"
-              value = {form.usernaame}
-              onChangeText={usernaame => setForm({...form,usernaame})}
+              value = {form.username}
+              onChangeText={username => setForm({...form,username})}
             />
           </View>
 

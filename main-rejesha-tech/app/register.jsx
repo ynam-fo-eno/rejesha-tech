@@ -20,7 +20,7 @@ const Register = () =>  {
 const [form, setForm] = useState({
     fName: "",
     lName: "",
-    usernaame: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -38,7 +38,7 @@ const [form, setForm] = useState({
 
 const handleRegister = async () => {
   // 1. Validation (Added lName and fName checks)
-  if (!form.fName || !form.lName || !form.usernaame || !form.email || !form.password || !role1) {
+  if (!form.fName || !form.lName || !form.username || !form.email || !form.password || !role1) {
     Alert.alert("Error", "Please fill all required fields (including Main Role)");
     return;
   }
@@ -50,11 +50,11 @@ const handleRegister = async () => {
       body: JSON.stringify({
         fName: form.fName,
         lName: form.lName,
-        usernaame: form.usernaame,
+        username: form.username,
         email: form.email,
         password: form.password,
         role1: role1,
-        role2: role2, 
+        role2: role2, // This can be null, which is fine
       }),
     });
 
@@ -114,13 +114,13 @@ const handleRegister = async () => {
           </View>
 
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>usernaame</Text>
+            <Text style = {styles.inputLabel}>username</Text>
             <TextInput
               style = {styles.inputControl}
-              placeholder = "Enter usernaame(case sensitive!)"
+              placeholder = "Enter username(case sensitive!)"
               placeholderTextColor= "#929292"
-              value = {form.usernaame}
-              onChangeText={usernaame => setForm({...form,usernaame})}
+              value = {form.username}
+              onChangeText={username => setForm({...form,username})}
             />
           </View>
 
