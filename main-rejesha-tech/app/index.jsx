@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Logo from "../assets/img/rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -55,6 +55,7 @@ const handleLogin = async () => {
 };
 
   return (
+    <ScrollView>
     <SafeAreaProvider>
     <StatusBar translucent={true}></StatusBar>
     <SafeAreaView style = {{flex: 1, backgroundColor: '#899b9eff'}}>
@@ -120,6 +121,7 @@ const handleLogin = async () => {
           </View> 
     </SafeAreaView> 
     </SafeAreaProvider>
+    </ScrollView>
   );
 }
 
