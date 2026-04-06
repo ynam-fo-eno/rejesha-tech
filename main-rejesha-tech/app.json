@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "scheme":"app",
+    "name": "1_FINAL_PROJECT_CODE",
+    "slug": "1_FINAL_PROJECT_CODE",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/rejesha-tech-logo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/rejesha-tech-splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/alt-rejesha-tach-logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
