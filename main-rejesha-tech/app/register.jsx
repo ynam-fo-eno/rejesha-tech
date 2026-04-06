@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Logo from "../assets/img/rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
+import { BASE_URL } from "../constants/config";
 
 
 const roleOptions = [
@@ -19,7 +20,7 @@ const Register = () =>  {
 const [form, setForm] = useState({
     fName: "",
     lName: "",
-    userName: "",
+    usernaame: "",
     email: "",
     password: "",
   });
@@ -35,40 +36,45 @@ const [form, setForm] = useState({
   const [role2, setRole2] = useState(null);
 
 
-  const handleRegister = async () => {
-    if (!form.fName || !form.userName || !form.email || !form.password || !role1) {
-      Alert.alert("Error", "Please fill required fields (including Main Role)");
+const handleRegister = async () => {
+  // 1. Validation (Added lName and fName checks)
+  if (!form.fName || !form.lName || !form.usernaame || !form.email || !form.password || !role1) {
+    Alert.alert("Error", "Please fill all required fields (including Main Role)");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fName: form.fName,
+        lName: form.lName,
+        usernaame: form.usernaame,
+        email: form.email,
+        password: form.password,
+        role1: role1,
+        role2: role2, 
+      }),
+    });
+
+    const data = await response.json();
+
+    // 2. The !response.ok check (The "Anti-Crash" logic)
+    if (!response.ok) {
+      Alert.alert("Registration Failed", data.error || data.message || "An error occurred");
       return;
     }
 
-    try {
-      const response = await fetch('http://10.47.179.60:3000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fName: form.fName,
-          lName: form.lName,
-          userName: form.userName,
-          email: form.email,
-          password: form.password,
-          role1: role1,
-          role2: role2,
-        }),
-      });
+    // 3. Success
+    Alert.alert("Success", "Account created! Please log in.");
+    router.replace('/'); 
 
-      const data = await response.json();
-
-      if (response.ok) {
-        Alert.alert("Success", "Account created! Please log in.");
-        router.replace('/'); // Send back to login screen
-      } else {
-        Alert.alert("Registration Failed", data.error || data.message || "An error occurred");
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Network Error", "Cannot connect to server.");
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Network Error", "Cannot connect to server. Check your internet.");
+  }
+};
 
 
   return (
@@ -108,13 +114,13 @@ const [form, setForm] = useState({
           </View>
 
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>Username</Text>
+            <Text style = {styles.inputLabel}>usernaame</Text>
             <TextInput
               style = {styles.inputControl}
-              placeholder = "Enter username(case sensitive!)"
+              placeholder = "Enter usernaame(case sensitive!)"
               placeholderTextColor= "#929292"
-              value = {form.userName}
-              onChangeText={userName => setForm({...form,userName})}
+              value = {form.usernaame}
+              onChangeText={usernaame => setForm({...form,usernaame})}
             />
           </View>
 

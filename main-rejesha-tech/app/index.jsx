@@ -5,10 +5,11 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Logo from "../assets/img/rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link,router } from 'expo-router';
+import { BASE_URL } from '../constants/config';
 
 const Home = () => {
   const [form, setForm] = useState({
-    userName: "",
+    usernaame: "",
     password: "",
   });
 
@@ -18,36 +19,41 @@ const Home = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleLogin = async () => {
-    if (!form.userName || !form.password) {
-      Alert.alert("Error", "Please fill in all fields");
+const handleLogin = async () => {
+  if (!form.usernaame || !form.password) {
+    Alert.alert("Error", "Please fill in all fields");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        usernaame: form.usernaame,
+        password: form.password
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // This handles the 404 "User not found" from your Aiven database
+      Alert.alert("Login Failed", data.message || "Invalid credentials");
       return;
     }
 
-    try {
-      const response = await fetch('http://10.47.179.60:3000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userName: form.userName,
-          password: form.password
-        }),
-      });
+    // Success: Log the token and move to Welcome
+    Alert.alert("Success", "Logged in successfully!");
+    console.log("JWT Token:", data.token); 
+    router.replace('/welcome'); 
 
-      const data = await response.json();
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Network Error", "Cannot connect to server. Ensure backend is live.");
+  }
+};
 
-      if (response.ok) {
-        Alert.alert("Success", "Logged in successfully!");
-        console.log("JWT Token:", data.token); // You'll save this token later
-        router.replace('/welcome'); // Navigate to welcome page
-      } else {
-        Alert.alert("Login Failed", data.message || "Invalid credentials");
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Network Error", "Cannot connect to server. Check IP address.");
-    }
-  };
   return (
     <SafeAreaProvider>
     <StatusBar translucent={true}></StatusBar>
@@ -62,13 +68,13 @@ const Home = () => {
 
         <View style ={styles.form}>
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>Username</Text>
+            <Text style = {styles.inputLabel}>usernaame</Text>
             <TextInput
               style = {styles.inputControl}
-              placeholder = "Enter username(case sensitive!)"
+              placeholder = "Enter usernaame(case sensitive!)"
               placeholderTextColor= "#929292"
-              value = {form.userName}
-              onChangeText={userName => setForm({...form,userName})}
+              value = {form.usernaame}
+              onChangeText={usernaame => setForm({...form,usernaame})}
             />
           </View>
 

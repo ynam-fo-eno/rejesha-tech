@@ -12,6 +12,10 @@ app.use(express.json()); // Allows Node to read the JSON sent from React Native
 const authRoutes = require('./src/routes/auth');
 app.use('/api/auth', authRoutes); // This makes your endpoints: http://[YOUR_IP]:3000/api/auth/login
 
+app.get('/', (req, res) => {
+  res.send("Rejesha Tech API is Online and Operational!");
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
