@@ -3,10 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Logo from "../assets/img/rejesha-tech-logo.png"; 
+import Logo from "../../assets/img/rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
-import { BASE_URL } from "../constants/config";
+import { BASE_URL } from "../../constants/config";
 
 
 const roleOptions = [

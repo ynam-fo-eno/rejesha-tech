@@ -2,12 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Logo from "../assets/img/rejesha-tech-logo.png"; 
+import Logo from "../../assets/img/rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link,router } from 'expo-router';
-import { BASE_URL } from '../constants/config';
+import { BASE_URL } from '../../constants/config';
+import { useAuth } from '../../hooks/useAuth';
 
-const Home = () => {
+const Login = () => {
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -18,6 +19,8 @@ const Home = () => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+
+  const { login } = useAuth();
 
 const handleLogin = async () => {
   if (!form.username || !form.password) {
@@ -45,8 +48,9 @@ const handleLogin = async () => {
 
     // Success: Log the token and move to Welcome
     Alert.alert("Success", "Logged in successfully!");
-    console.log("JWT Token:", data.token); 
-    router.replace('/welcome'); 
+    await login(data.user, data.token);
+    //console.log("JWT Token:", data.token); 
+    router.replace('/profile'); 
 
   } catch (error) {
     console.error(error);
@@ -125,7 +129,7 @@ const handleLogin = async () => {
   );
 }
 
-export default Home;
+export default Login;
 
 const styles = StyleSheet.create({
   container: {

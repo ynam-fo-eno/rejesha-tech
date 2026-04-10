@@ -1,0 +1,244 @@
+//For BookContext.jsx
+import { createContext, useState } from "react";
+import { ID, Permission, Role } from "react-native-appwrite";
+
+import { dbs } from "../lib/appwrite";
+import { useUser } from "../hooks/UseUser";
+
+
+
+
+const DATABASE_ID = "69ca440600269cf226f8";
+const TABLE_ID = "vitabu";
+
+export const BooksContext = createContext();
+
+export function BooksProvider({children}) {
+  const [books, setBooks] = useState([]);
+  const {user} = useUser();
+
+  async function fetchBooks() {
+    try {
+
+    } catch (error) {
+        throw Error(error.message);
+    }
+  }
+
+  async function fetchBookById(id) {
+    try {
+      return response;
+    } catch (error) {
+        throw Error(error.message);
+    }
+  }
+
+  async function createBook(data) {
+    try {
+        const newBook = await dbs.createDocument(
+          DATABASE_ID, 
+          TABLE_ID, 
+          ID.unique(),
+          {...data, userID:user.$id },
+          [
+            Permission.read(Role.user(user.$id)),
+            Permission.update(Role.user(user.$id)),
+            Permission.delete(Role.user(user.$id)),
+          ]
+        );
+    } catch (error) {
+        throw Error(error.message);
+
+    }
+  }
+
+  async function deleteBook(id) {
+    try {
+      
+    } catch (error) {
+        throw Error(error.message);
+    }
+  }
+
+  return (
+    <BooksContext.Provider 
+      value={{ books, fetchBooks, fetchBookById, createBook, deleteBook }}
+    >
+      {children}
+    </BooksContext.Provider>
+  )
+}
+
+//For UserContext.jsx
+import {createContext, useEffect, useState} from "react";
+import {ID} from "react-native-appwrite";
+import { account } from "../lib/appwrite";
+import { Alert } from "react-native";
+
+export const UserContext = new createContext();
+
+
+export function UserProvider ({children}) {
+    //Null until sb logs in.
+    const [user, setUser] = useState(null);
+    const [authChecked, setAuthChecked] = useState(false);
+
+    async function login (email,password) {
+         try{
+            await account.createEmailPasswordSession(email, password);
+            const response = await account.get();
+            setUser(response);
+        }
+        catch(error){
+            throw Error(error.message);
+        }
+    };
+
+    async function register (email,password) {
+        try{
+            await account.create(ID.unique(),email, password);
+            await login(email, password);
+        }
+        catch(error){
+           throw Error(error.message);
+        }
+        
+    };
+    
+    async function logout () {
+        await account.deleteSession("current");
+        setUser(null);
+
+    };
+
+    async function getInitialUserValue() {
+        try{
+            const response = await account.get();
+            setUser(response);
+        }
+        catch(error){
+            setUser(null);
+        }
+        finally{
+            setAuthChecked(true);
+        }
+    }
+
+    useEffect(() =>{
+        getInitialUserValue()
+    },[]);
+
+    return(
+        <UserContext.Provider value = {{user, login, register,logout, authChecked}}>
+            {children}
+        </UserContext.Provider>
+    );
+
+}
+
+
+
+//For UseUser.jsx
+import { useContext } from "react";
+import { BooksContext } from "../context/BookContext";
+
+export function useBooks() {
+  const context = useContext(BooksContext);
+
+  if (!context) {
+    throw new Error("useBooks must be used within a BooksProvider");
+  }
+
+  return context;
+}
+
+//For UseBook.jsx
+import { useContext} from "react";
+
+import { UserContext } from "../context/UserContext";
+
+export function useUser() {
+    const context = useContext(UserContext);
+
+    if(!context){
+        throw new Error("For added pages, useUser needs to be within UserProvider.");
+    }
+    return context;
+}
+
+
+//Old _layout.jsx (for root)
+
+import { StyleSheet, Text, View } from 'react-native'
+import {Slot, Stack} from 'expo-router'
+
+const RootLayout = () => {
+
+    return (
+        <Stack screenOptions = {{
+            headerStyle: {backgroundColor: "#ddd"},
+            headerTintColor: "#333 ",
+            textAlign : "center",
+        }}>
+            <Stack.Screen name = "index" options = {{title: "Login"}} />
+            <Stack.Screen name = "register" options = {{title: "Registration Page"}} />
+            <Stack.Screen name = "welcome" options = {{title: "Welcome Page"}} /> 
+        </Stack>
+    );
+}
+
+export default RootLayout;
+
+const styles = StyleSheet.create({
+    footerText: {
+        textAlign: "center",
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+
+})
+
+
+//New protected _layout.jsx
+import { Tabs } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+export default function ProtectedLayout() {
+  return (
+    <Tabs screenOptions={{ 
+      tabBarActiveTintColor: '#ff0101ff', // Rejesha Red
+      headerStyle: { backgroundColor: '#899b9eff' }, // Rejesha Grey
+      headerTitleAlign: 'center',
+    }}>
+      <Tabs.Screen 
+        name="profile" 
+        options={{ 
+          title: 'You & Tech', 
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={24} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="repairs" 
+        options={{ 
+          title: 'Fix Your Tech', 
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="wrench" color={color} size={24} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="products" 
+        options={{ 
+          title: 'Buy/Sell', 
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="store" color={color} size={24} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="user_settings" 
+        options={{ 
+          title: "Setting Rejesha", 
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cog" color={color} size={24} /> 
+        }} 
+      />
+    </Tabs>
+  );
+}
+

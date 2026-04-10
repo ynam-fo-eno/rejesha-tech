@@ -1,12 +1,12 @@
 {
   "expo": {
     "scheme":"app",
-    "name": "1_FINAL_PROJECT_CODE",
-    "slug": "1_FINAL_PROJECT_CODE",
+    "name": "REJESHA TECH KE",
+    "slug": "rejesha-tech",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/rejesha-tech-logo.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/rejesha-tech-splash.png",
