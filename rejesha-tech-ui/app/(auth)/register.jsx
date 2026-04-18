@@ -3,10 +3,11 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Logo from "../../assets/img/rejesha-tech-logo.png"; 
+import Logo from "../../assets/img/alt-rejesha-tech-logo.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
 import { BASE_URL } from "../../constants/config";
+import themedAlert from '../../components/ThemedAlert';
 
 
 const roleOptions = [
@@ -25,6 +26,12 @@ const [form, setForm] = useState({
     password: "",
   });
 
+  // NEW: State for real-time error messages
+  const [errors, setErrors] = useState({
+    fName: "",
+    lName: "",
+  });
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
   const togglePasswordVisibility = () => {
@@ -35,11 +42,28 @@ const [form, setForm] = useState({
   const [role1, setRole1] = useState(null);
   const [role2, setRole2] = useState(null);
 
+  const validateName = (text, field) => {
+    const nameRegex = /^[a-zA-Z\s]*$/; // Matches only letters and spaces
+    if (!nameRegex.test(text)) {
+      setErrors(prev => ({ ...prev, [field]: "Numbers/symbols not allowed" }));
+    } else {
+      setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+    setForm({ ...form, [field]: text });
+  };
 
 const handleRegister = async () => {
   // 1. Validation (Added lName and fName checks)
   if (!form.fName || !form.lName || !form.username || !form.email || !form.password || !role1) {
-    Alert.alert("Error", "Please fill all required fields (including Main Role)");
+    themedAlert("Error", "Please fill all required fields (including Main Role)");
+    return;
+  }
+
+  if (errors.fName || errors.lName) {
+    themedAlert(
+      "Validation Error", 
+      "You cannot sign up with numbers or symbols in your name. Please correct the highlighted fields."
+    );
     return;
   }
 
@@ -62,17 +86,17 @@ const handleRegister = async () => {
 
     // 2. The !response.ok check (The "Anti-Crash" logic)
     if (!response.ok) {
-      Alert.alert("Registration Failed", data.error || data.message || "An error occurred");
+      themedAlert("Registration Failed", data.error || data.message || "An error occurred");
       return;
     }
 
     // 3. Success
-    Alert.alert("Success", "Account created! Please log in.");
+    themedAlert("Success", "Account created! Please log in.");
     router.replace('/'); 
 
   } catch (error) {
     console.error(error);
-    Alert.alert("Network Error", "Cannot connect to server. Check your internet.");
+    themedAlert("Network Error", "Cannot connect to server. Check your internet.");
   }
 };
 
@@ -94,23 +118,25 @@ const handleRegister = async () => {
           <View style = {styles.input}>
             <Text style = {styles.inputLabel}>First Name</Text>
             <TextInput
-              style = {styles.inputControl}
-              placeholder = "Enter first name (no numbers please!)"
+              style = {[styles.inputControl, errors.fName ? {borderColor: 'red', borderWidth: 1} : null]}
+              placeholder = "Enter first name"
               placeholderTextColor= "#929292"
               value = {form.fName}
-              onChangeText={fName => setForm({...form,fName})}
+              onChangeText={text =>validateName(text, 'fName')}
             />
+            {errors.fName ? <Text style={styles.errorText}>{errors.fName}</Text> : null}
           </View>
 
           <View style = {styles.input}>
             <Text style = {styles.inputLabel}>Last Name</Text>
             <TextInput
-              style = {styles.inputControl}
-              placeholder = "Enter middle  name or suranme (no numbers please!)"
+              style = {[styles.inputControl, errors.lName ? {borderColor: 'red', borderWidth: 1} : null]}
+              placeholder = "Enter middle  name or suranme"
               placeholderTextColor= "#929292"
               value = {form.lName}
-              onChangeText={lName => setForm({...form,lName})}
+              onChangeText={text => validateName(text, 'lName')}
             />
+            {errors.lName ? <Text style={styles.errorText}>{errors.lName}</Text> : null}
           </View>
 
           <View style = {styles.input}>
@@ -200,7 +226,7 @@ const handleRegister = async () => {
        <TouchableOpacity>
           <Text style={styles.formFooter}>
             Have an account already?{' '}
-                <Link href = "/" style = {styles.link}>Sign In</Link>
+                <Link href = "/login" style = {styles.link}>Sign In</Link>
             </Text>
           </TouchableOpacity>
           </View> 
@@ -215,15 +241,14 @@ export default Register
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
     padding: 24,
     alignItems: "center",
+    width: "100%",
   },
 
   img : {
-    height: 50,
-    width : 50,
+    height: 100,
+    width : 100,
     marginBottom: 10,
     alignSelf: "center",
   },
@@ -248,6 +273,9 @@ const styles = StyleSheet.create({
   },
 
   form:{
+    width: '100%',
+    maxWidth: 400,
+    alignItems: "stretch",
 
   },
 
@@ -286,7 +314,8 @@ const styles = StyleSheet.create({
   },
 
   input: {
-  
+    width: '100%',        
+    marginBottom: 12,
   },
 
   inputControl: {
@@ -294,6 +323,9 @@ const styles = StyleSheet.create({
     backgroundColor:"#fff",
     paddingHorizontal: 20,
     borderRadius:12,
+    width: '100%',        
+    borderWidth: 1,       
+    borderColor: 'transparent',
     outlineStyle: "none",
   },
 
@@ -383,4 +415,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-});
+  errorText:{
+     color: 'red', 
+     fontSize: 12,
+     marginTop: 4, 
+  }
+
+}); 

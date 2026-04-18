@@ -67,7 +67,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
-    elevation: 0, // Removes Android shadow for a flatter look
+    elevation: 0,
+    height: 65, // Gives the bar some breathing room
+      paddingBottom: 10, // Removes Android shadow for a flatter look
   },
   techFooter: {
     paddingTop: 10,

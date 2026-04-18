@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/alt-rejesha-tach-logo.png",
+        "foregroundImage": "./assets/alt-rejesha-tech-logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true

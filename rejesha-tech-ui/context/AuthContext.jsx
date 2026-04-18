@@ -29,13 +29,13 @@ export function AuthProvider({ children }) {
   const login = async (userData, token) => {
     await AsyncStorage.setItem('jwtToken', token);
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
-    setUser(userData);
+    setUser(userData); // Fixed casing: setUser
   };
 
   const logout = async () => {
     await AsyncStorage.removeItem('jwtToken');
     await AsyncStorage.removeItem('userData');
-    setUser(null);
+    setUser(null); // Fixed casing: setUser
   };
 
   return (

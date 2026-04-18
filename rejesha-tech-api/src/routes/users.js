@@ -12,4 +12,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Security: The authMiddleware runs first to ensure the token is valid
 router.get('/profile', authMiddleware, userController.getProfile);
 
+//To permit a user to update their profile pic
+router.post('/update-dp',authMiddleware, userController.updateProfilePicture);
+
 module.exports = router;

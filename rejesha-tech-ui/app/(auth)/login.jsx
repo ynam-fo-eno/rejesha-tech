@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link,router } from 'expo-router';
 import { BASE_URL } from '../../constants/config';
 import { useAuth } from '../../hooks/useAuth';
+import themedAlert from "../../components/ThemedAlert";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -24,7 +25,7 @@ const Login = () => {
 
 const handleLogin = async () => {
   if (!form.username || !form.password) {
-    Alert.alert("Error", "Please fill in all fields");
+    themedAlert("Error", "Please fill in all fields");
     return;
   }
 
@@ -42,19 +43,19 @@ const handleLogin = async () => {
 
     if (!response.ok) {
       // This handles the 404 "User not found" from your Aiven database
-      Alert.alert("Login Failed", data.message || "Invalid credentials");
+      themedAlert("Login Failed", data.message || "Invalid credentials");
       return;
     }
 
     // Success: Log the token and move to Welcome
-    Alert.alert("Success", "Logged in successfully!");
+    themedAlert("Success", "Logged in successfully!");
     await login(data.user, data.token);
     //console.log("JWT Token:", data.token); 
     router.replace('/profile'); 
 
   } catch (error) {
     console.error(error);
-    Alert.alert("Network Error", "Cannot connect to server. Ensure backend is live.");
+   themedAlert("Network Error", "Cannot connect to server. Ensure backend is live.");
   }
 };
 
@@ -111,7 +112,7 @@ const handleLogin = async () => {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => Alert.alert("Coming Soon", "Password reset feature under construction!")}>
+            <TouchableOpacity onPress={() => themedAlert("Coming Soon", "Password reset feature under construction!")}>
              <Text style={styles.formLink}>Forgot password?</Text>
            </TouchableOpacity>
           </View>
@@ -140,8 +141,8 @@ const styles = StyleSheet.create({
   },
 
   img : {
-    height: 100,
-    width : 100,
+    height: 200,
+    width : 200,
     marginBottom: 10,
     alignSelf: "center",
   },
