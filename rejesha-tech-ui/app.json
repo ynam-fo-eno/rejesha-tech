@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/img/-tech-splash.png",
+      "image": "./assets/img/rejesha-tech-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
