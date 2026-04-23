@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
-import Logo from "../assets/img/rejesha-tech-logo.png"; 
+//import Logo from "../assets/img/rejesha-tech-logo.png"; 
 
 export default function Index() {
   const { user, isLoading } = useAuth();
@@ -10,7 +10,6 @@ export default function Index() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Image source={Logo} style={styles.logo} />
         <Text style={styles.loadingText}>REJESHA TECH</Text>
         <ActivityIndicator size="large" color="#ff0101ff" />
         <Text style={styles.footerText}>Restoring Tech, Renewing Trust...</Text>
@@ -21,10 +20,10 @@ export default function Index() {
   // 2. The Traffic Controller
   if (user) {
     // Corrected path to your new (tabs) group
-    return <Redirect href="profile" />;
+    return <Redirect href="/profile" />;
   } else {
     // Redirects to your login page
-    return <Redirect href="repairs" />; 
+    return <Redirect href="/repairs" />; 
   }
 }
 
