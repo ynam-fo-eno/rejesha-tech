@@ -1,43 +1,21 @@
-import { Redirect } from 'expo-router';
-import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native';
-import { useAuth } from '../hooks/useAuth';
-//import Logo from "../assets/img/rejesha-tech-logo.png"; 
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 export default function Index() {
-  const { user, isLoading } = useAuth();
-
-  // 1. The "Nice" Loading Screen
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>REJESHA TECH</Text>
-        <ActivityIndicator size="large" color="#ff0101ff" />
-        <Text style={styles.footerText}>Restoring Tech, Renewing Trust...</Text>
-      </View>
-    );
-  }
-
-  // 2. The Traffic Controller
-  if (user) {
-    // Corrected path to your new (tabs) group
-    return <Redirect href="/profile" />;
-  } else {
-    // Redirects to your login page
-    return <Redirect href="/repairs" />; 
-  }
+  return (
+    <View style={styles.loadingContainer}>
+      <Text style={styles.loadingText}>REJESHA TECH</Text>
+      <ActivityIndicator size="large" color="#29b639" />
+      <Text style={styles.footerText}>Restoring Tech, Renewing Trust...</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#899b9eff', // Your signature Rejesha Grey
+    backgroundColor: '#074d59',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
   },
   loadingText: {
     fontSize: 24,

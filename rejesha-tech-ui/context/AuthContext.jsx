@@ -9,16 +9,20 @@ export function AuthProvider({ children }) {
 
   // Check if a token exists when the app opens
   useEffect(() => {
+    
     const loadUser = async () => {
+      console.log("Checking storage...");
       try {
         const token = await AsyncStorage.getItem('jwtToken');
         const userData = await AsyncStorage.getItem('userData');
+        console.log("Token found:", token);
         if (token && userData) {
           setUser(JSON.parse(userData));
         }
       } catch (error) {
         console.error("Failed to load user data", error);
       } finally {
+        console.log("Loading finished!");
         setIsLoading(false);
       }
     };

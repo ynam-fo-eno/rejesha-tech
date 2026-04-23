@@ -5,11 +5,11 @@
     "slug": "rejesha-tech",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/rejesha-tech-logo.png",
+    "icon": "./assets/img/rejesha-tech-logo.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/rejesha-tech-splash.png",
+      "image": "./assets/img/-tech-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/alt-rejesha-tech-logo.png",
+        "foregroundImage": "./assets/img/alt-rejesha-tech-logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

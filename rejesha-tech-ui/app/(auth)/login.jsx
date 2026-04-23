@@ -61,7 +61,7 @@ const handleLogin = async () => {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-    <SafeAreaProvider>
+    
     <StatusBar translucent={true}></StatusBar>
     <SafeAreaView style = {{flex: 1, backgroundColor: '#899b9eff'}}>
       <View style={styles.container}>
@@ -125,7 +125,6 @@ const handleLogin = async () => {
           </TouchableOpacity>
           </View> 
     </SafeAreaView> 
-    </SafeAreaProvider>
     </ScrollView>
   );
 }
@@ -257,7 +256,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     height:30,
     borderWidth: 1,
-    backgroundColor: '#ff0101ff',
+    backgroundColor: '#ff0101',
     borderColor: '#000000ff',
     },
     

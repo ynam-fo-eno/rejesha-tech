@@ -28,7 +28,7 @@ export const ThemeProvider = ({ children }) => {
       background: isDarkMode ? '#1D2A32' : '#f5f5f5',
       text: isDarkMode ? '#ecf0f1' : '#1D2A32',
       card: isDarkMode ? '#2c3e50' : '#fff',
-      primary: '#ff0101ff', // Rejesha Red
+      primary: '#ff0101', // Rejesha Red
       grey: '#899b9eff',
     },
     toggleTheme,
