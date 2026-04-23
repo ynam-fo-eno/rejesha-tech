@@ -44,14 +44,12 @@ let result = await ImagePicker.launchImageLibraryAsync({
 const uploadToBackend = async (base64) => {
   setUploading(true);
   try {
-    // 2. Grab the token from storage
     const token = await AsyncStorage.getItem('jwtToken'); 
 
     const response = await fetch(`${BASE_URL}/api/users/update-dp`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        // 3. This is the "ID badge" the 401 error is looking for!
         'Authorization': `Bearer ${token}` 
       },
       body: JSON.stringify({ 
@@ -62,9 +60,20 @@ const uploadToBackend = async (base64) => {
     const data = await response.json();
 
     if (response.ok) {
-      const updatedUser = { ...user, image_url: data.imageUrl };
-      login(updatedUser, token); // Pass the token back to keep the session alive
+      // 🛡️ SAFETY CHECK: If the backend hasn't been pushed to Render yet, 
+      // data.user will be undefined. We build a fallback so it doesn't crash.
+      if (data.user) {
+        // This is the ideal path (New Backend)
+        login(data.user, token); 
+      } else {
+        // This is the "Emergency Path" (Old Backend)
+        // It keeps your existing roles but adds the new image link
+        const fallbackUser = { ...user, image_url: data.imageUrl || user.image_url };
+        login(fallbackUser, token);
+      }
+
       Alert.alert('Success', 'Profile picture updated!');
+      
     } else {
       console.log("Server Error:", data);
       Alert.alert('Error', data.error || 'Failed to update');

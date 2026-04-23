@@ -3,7 +3,7 @@ const cloudinary = require('../config/cloudinary');
 
 exports.getProfile = async (req, res) => {
     try {
-        const [user] = await db.execute("SELECT id, fName, lName, username, email, role1,role2 FROM users WHERE id = ?", [req.user.id]);
+        const [user] = await db.execute("SELECT id, fName, lName, username, email, role1,role2,image_url FROM users WHERE id = ?", [req.user.id]);
         res.json(user[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -35,8 +35,19 @@ exports.updateProfilePicture = async (req, res) => {
       'UPDATE users SET image_url = ? WHERE id = ?', 
       [imageUrl, userId]
     );
+
+      const [rows] = await db.execute(
+      "SELECT id, fName, lName, username, email, role1, role2, image_url FROM users WHERE id = ?",
+      [userId]
+    );
+
+    const updatedUser = rows[0];
+
+    return res.status(200).json({ 
+      message: "Profile picture updated", 
+      user: updatedUser // Send the WHOLE user back!
+    });
     
-    res.json({ success: true, imageUrl });
 
   } catch (error) {
     console.error("DP Update Error:", error);
