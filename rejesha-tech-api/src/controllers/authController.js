@@ -41,13 +41,17 @@ exports.login = async (req, res) => {
             { expiresIn: '1h' }
         );
         
-        res.json({ 
+       res.json({ 
             token, 
             user: { 
                 id: users[0].id, 
+                fName: users[0].fName,       // Added
+                lName: users[0].lName,       // Added
                 username: users[0].username, 
+                email: users[0].email,       // Added
                 role1: users[0].role1,
-                role2: users[0].role2
+                role2: users[0].role2,
+                image_url: users[0].image_url // THE BIG ONE!
             } 
         });
     } catch (error) {
