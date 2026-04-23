@@ -27,7 +27,6 @@ export function AuthProvider({ children }) {
 
   // Called from your login.jsx after a successful fetch
   const login = async (userData, token) => {
-    console.log("🔍 DEPLOYMENT CHECK: Does this object have an image_url?", userData);
     await AsyncStorage.setItem('jwtToken', token);
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
     setUser(userData); // Fixed casing: setUser

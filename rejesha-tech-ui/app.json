@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme":"app",
+    "scheme": "app",
     "name": "REJESHA TECH KE",
     "slug": "rejesha-tech",
     "version": "1.0.0",
@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/alt-rejesha-tech-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.kenyanminato.rejeshatech"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -29,6 +30,18 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "73fd464e-6479-4469-bced-75edcc94a280"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/73fd464e-6479-4469-bced-75edcc94a280"
+    }
   }
 }

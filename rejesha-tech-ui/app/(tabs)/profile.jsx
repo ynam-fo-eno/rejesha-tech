@@ -43,9 +43,11 @@ let result = await ImagePicker.launchImageLibraryAsync({
 
 const uploadToBackend = async (base64) => {
   setUploading(true);
+  console.log("🌐 WEB DEBUG: Starting upload to", BASE_URL);
+
   try {
     const token = await AsyncStorage.getItem('jwtToken'); 
-
+    
     const response = await fetch(`${BASE_URL}/api/users/update-dp`, {
       method: 'POST',
       headers: { 
@@ -58,29 +60,27 @@ const uploadToBackend = async (base64) => {
     });
 
     const data = await response.json();
+    console.log("🌐 WEB DEBUG: Server Response ->", data);
 
     if (response.ok) {
-      // 🛡️ SAFETY CHECK: If the backend hasn't been pushed to Render yet, 
-      // data.user will be undefined. We build a fallback so it doesn't crash.
-      if (data.user) {
-        // This is the ideal path (New Backend)
-        login(data.user, token); 
-      } else {
-        // This is the "Emergency Path" (Old Backend)
-        // It keeps your existing roles but adds the new image link
-        const fallbackUser = { ...user, image_url: data.imageUrl || user.image_url };
-        login(fallbackUser, token);
+      // 🛡️ THE WEB-STRICT CHECK
+      const userToSave = data.user || { ...user, image_url: data.imageUrl || user.image_url };
+      
+      if (!userToSave || Object.keys(userToSave).length === 0) {
+        throw new Error("User data is null or empty");
       }
 
+      console.log("🌐 WEB DEBUG: Saving User ->", userToSave);
+      login(userToSave, token); 
+
       Alert.alert('Success', 'Profile picture updated!');
-      
     } else {
-      console.log("Server Error:", data);
       Alert.alert('Error', data.error || 'Failed to update');
     }
   } catch (error) {
-    console.error("Upload Error:", error);
-    Alert.alert('Upload Error', 'Could not connect to server.');
+    console.error("🌐 WEB DEBUG ERROR:", error);
+    // On Web, Alert.alert sometimes fails; use standard alert as fallback
+    if (typeof alert !== 'undefined') alert('Upload Error: ' + error.message);
   } finally {
     setUploading(false);
   }
