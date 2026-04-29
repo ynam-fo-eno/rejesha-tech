@@ -1,0 +1,609 @@
+// For register.jsx before auth implementation
+import {Link} from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Logo from "F:/Timo's Post High School Stuff/2. UNIVERSITY/2.COURSEWORK/46. ACS 400 []/1. PLANS AND CODE FOR FINAL PROJECT/1_FINAL_PROJECT_CODE/assets/rejesha-tech-logo.png"; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Dropdown } from 'react-native-element-dropdown';
+
+const Register = () =>  {
+const [form, setForm] = useState({
+    fName: "",
+    lName: "",
+    userName: "",
+    email: "",
+    password: "",
+  });
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const data = [
+  { label: 'Client', value: '0' },
+  { label: 'Technician', value: '1' },
+  { label: 'Teacher', value: '2' },
+];
+
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+
+
+  return (
+    <ScrollView>
+    <SafeAreaProvider>
+    <StatusBar translucent={true}></StatusBar>
+    <SafeAreaView style = {{flex: 1, backgroundColor: '#929292'}}>
+      <View style={styles.container}>
+        <View style = {styles.header}>
+          <Text style = {styles.title}>WELCOME TO REJESHATECH!</Text>
+          <Image source = {Logo} style = {styles.img}/>
+          <Text style = {styles.subtitle}>Serving Technician and Client Anywhere in Kenya</Text>
+          <Text style = {styles.title}>Registration Page</Text>
+        </View>
+
+        <View style ={styles.form}>
+          <View style = {styles.input}>
+            <Text style = {styles.inputLabel}>First Name</Text>
+            <TextInput
+              style = {styles.inputControl}
+              placeholder = "Enter first name (no numbers please!)"
+              placeholderTextColor= "#929292"
+              value = {form.fName}
+              onChangeText={fName => setForm({...form,fName})}
+            />
+          </View>
+
+          <View style = {styles.input}>
+            <Text style = {styles.inputLabel}>Last Name</Text>
+            <TextInput
+              style = {styles.inputControl}
+              placeholder = "Enter middle  name or suranme (no numbers please!)"
+              placeholderTextColor= "#929292"
+              value = {form.lName}
+              onChangeText={lName => setForm({...form,lName})}
+            />
+          </View>
+
+          <View style = {styles.input}>
+            <Text style = {styles.inputLabel}>Username</Text>
+            <TextInput
+              style = {styles.inputControl}
+              placeholder = "Enter username(case sensitive!)"
+              placeholderTextColor= "#929292"
+              value = {form.userName}
+              onChangeText={userName => setForm({...form,userName})}
+            />
+          </View>
+
+           <View style = {styles.input}>
+            <Text style = {styles.inputLabel}>Email</Text>
+            <TextInput
+              style = {styles.inputControl}
+              placeholder = "Enter email "
+              placeholderTextColor= "#929292"
+              value = {form.email}
+              onChangeText={email => setForm({...form,email})}
+            />
+          </View>
+
+
+          <Text style = {styles.inputLabel}>Password</Text>
+
+          <View style = {styles.passwordInputContainer}>
+            <TextInput
+              style = {styles.passwordInput}
+              placeholder = "Enter password"
+              placeholderTextColor= "#929292"
+              autoCapitalize="none"
+              secureTextEntry={isPasswordVisible} // Bind the state here
+              value = {form.password}
+              onChangeText={password => setForm({...form,password})}
+            />
+            <Pressable onPress={togglePasswordVisibility} style={styles.visibilityBtn}>
+              <MaterialCommunityIcons
+                name={isPasswordVisible ? 'eye-off' : 'eye'} // Change icon based on state
+                size={16}
+                color="#232323"
+              />
+            </Pressable>
+          </View>
+
+            <View style={styles.dropDownContainer}>
+                <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={data}
+                    search
+                    maxHeight={200}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? 'I will mainly be a...' : '...'}
+                    searchPlaceholder="Main Role"
+                    value={value}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                    setValue(item.value);
+                    setIsFocus(false);
+                    }}
+                />
+                </View>
+
+                  <View style={styles.dropDownContainer}>
+                <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={data}
+                    search
+                    maxHeight={200}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? '...but I can also be a...' : '...'}
+                    searchPlaceholder="Secondary Role"
+                    value={value}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                    setValue(item.value);
+                    setIsFocus(false);
+                    }}
+                />
+                </View>
+
+          <View style={styles.formAction}>
+            <TouchableOpacity
+               onPress={() => {
+                // handle onPress
+                }}>
+                <View style={styles.btn}>
+                <Link href = "/" style = {styles.link}>Sign Up</Link>
+                </View>
+            </TouchableOpacity>
+        </View>
+      </View>
+       <TouchableOpacity
+          onPress={() => {
+              // handle link
+          }}>
+          <Text style={styles.formFooter}>
+            Have an account already?{' '}
+                <Link href = "/register" style = {styles.link}>Sign In</Link>
+            </Text>
+          </TouchableOpacity>
+          </View> 
+    </SafeAreaView> 
+    </SafeAreaProvider>
+    </ScrollView>
+  );
+}
+
+export default Register
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    padding: 24,
+    alignItems: "center",
+  },
+
+  img : {
+    height: 50,
+    width : 50,
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+
+  header: {
+    marginVertical: 10,
+  },
+
+  title: {
+    fontSize: 31,
+    fontWeight: '700',
+    color: '#1D2A32',
+    marginBottom: 6,
+    textAlign: "center",
+  },
+
+   subtitle: {
+    marginTop: 10,
+    fontSize: 20,
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+
+  form:{
+
+  },
+
+  formAction: {
+    marginTop: 4,
+    marginBottom: 16,
+  },
+
+  formLink: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#199908ff',
+    textAlign: 'center',
+    marginBottom:10,
+  },
+
+  formFooter: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#222',
+    textAlign: 'center',
+    letterSpacing: 0.15,
+    marginTop: 0,
+  },
+
+  
+
+  inputLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    fontStyle: "italic",
+    color: "#222",
+    marginTop:5,
+    marginBottom: 5,
+
+  },
+
+  input: {
+  
+  },
+
+  inputControl: {
+    height:44,
+    backgroundColor:"#fff",
+    paddingHorizontal: 20,
+    borderRadius:12,
+    outlineStyle: "none",
+  },
+
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+  },
+
+   passwordInput: {
+    flex: 1,
+    height:44,
+    paddingHorizontal: 20,
+    fontSize: 15,
+    outlineStyle: "none",
+
+   },
+
+   visibilityBtn: {
+    paddingRight: 10,
+  },
+
+
+
+  card:{
+    backgroundColor: "#3d4943ff",
+    padding: 20,
+    borderRadius:5,
+    boxShadow: "4px 4px rgba(0,0,0,1)",
+  },
+
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    marginTop:20,
+    marginBottom:20,
+    paddingHorizontal: 20,
+    height:30,
+    borderWidth: 1,
+    backgroundColor: '#ff0101ff',
+    borderColor: '#000000ff',
+    },
+    
+    btnText: {
+        fontSize: 18,
+        lineHeight: 26,
+        fontWeight: '600',
+        color: '#000000ff',
+    },
+
+ link: {
+    fontSize: 20,
+    fontWeight: "italic",
+    marginVertical: 10,
+    textDecorationLine: 'underline'
+  },
+
+
+  dropDownContainer: {
+    padding: 16,
+  },
+
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+
+});
+
+//For login.jsx before auth implementation
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Logo from "F:/Timo's Post High School Stuff/2. UNIVERSITY/2.COURSEWORK/46. ACS 400 []/1. PLANS AND CODE FOR FINAL PROJECT/1_FINAL_PROJECT_CODE/assets/rejesha-tech-splash.png"; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
+
+const Home = () => {
+  const [form, setForm] = useState({
+    userName: "",
+    password: "",
+  });
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+  return (
+    <SafeAreaProvider>
+    <StatusBar translucent={true}></StatusBar>
+    <SafeAreaView style = {{flex: 1, backgroundColor: '#899b9eff'}}>
+      <View style={styles.container}>
+        <View style = {styles.header}>
+          <Text style = {styles.title}>WELCOME TO REJESHATECH!</Text>
+          <Image source = {Logo} style = {styles.img}/>
+          <Text style = {styles.subtitle}>Serving Technician and Client Anywhere in Kenya</Text>
+          <Text style = {styles.title}>Login Page</Text>
+        </View>
+
+        <View style ={styles.form}>
+          <View style = {styles.input}>
+            <Text style = {styles.inputLabel}>Username</Text>
+            <TextInput
+              style = {styles.inputControl}
+              placeholder = "Enter username(case sensitive!)"
+              placeholderTextColor= "#929292"
+              value = {form.userName}
+              onChangeText={userName => setForm({...form,userName})}
+            />
+          </View>
+
+          <Text style = {styles.inputLabel}>Password</Text>
+
+          <View style = {styles.passwordInputContainer}>
+            <TextInput
+              style = {styles.passwordInput}
+              placeholder = "Enter password"
+              placeholderTextColor= "#929292"
+              autoCapitalize="none"
+              secureTextEntry={isPasswordVisible} // Bind the state here
+              value = {form.password}
+              onChangeText={password => setForm({...form,password})}
+            />
+            <Pressable onPress={togglePasswordVisibility} style={styles.visibilityBtn}>
+              <MaterialCommunityIcons
+                name={isPasswordVisible ? 'eye-off' : 'eye'} // Change icon based on state
+                size={16}
+                color="#232323"
+              />
+            </Pressable>
+          </View>
+
+          <View style={styles.formAction}>
+            <TouchableOpacity
+               onPress={() => {
+                // handle onPress
+                }}>
+                <View style={styles.btn}>
+                <Link href = "/welcome" style = {styles.link}>Sign In</Link>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+            onPress={() => {
+              // handle link
+            }}>
+            <Text style={styles.formLink}>Forgot password?</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+       <TouchableOpacity
+          onPress={() => {
+              // handle link
+          }}>
+          <Text style={styles.formFooter}>
+            Don't have an account?{' '}
+                <Link href = "/register" style = {styles.link}>Sign Up </Link>
+            </Text>
+          </TouchableOpacity>
+          </View> 
+    </SafeAreaView> 
+    </SafeAreaProvider>
+  );
+}
+
+export default Home;
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    padding: 24,    
+  },
+
+  img : {
+    height: 100,
+    width : 100,
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+
+  header: {
+    marginVertical: 10,
+  },
+
+  title: {
+    fontSize: 31,
+    fontWeight: '700',
+    color: '#1D2A32',
+    marginBottom: 6,
+    textAlign: "center",
+  },
+
+   subtitle: {
+    marginTop: 10,
+    fontSize: 20,
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+
+  form:{
+
+  },
+
+  formAction: {
+    marginTop: 4,
+    marginBottom: 16,
+  },
+
+  formLink: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#199908ff',
+    textAlign: 'center',
+    marginBottom:10,
+  },
+
+  formFooter: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#222',
+    textAlign: 'center',
+    letterSpacing: 0.15,
+    marginTop: 0,
+  },
+
+  
+
+  inputLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    fontStyle: "italic",
+    color: "#222",
+    marginTop:5,
+    marginBottom: 5,
+
+  },
+
+  input: {
+  
+  },
+
+  inputControl: {
+    height:44,
+    backgroundColor:"#fff",
+    paddingHorizontal: 20,
+    borderRadius:12,
+    outlineStyle: "none",
+  },
+
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+  },
+
+   passwordInput: {
+    flex: 1,
+    height:44,
+    paddingHorizontal: 20,
+    fontSize: 15,
+    outlineStyle: "none",
+
+   },
+
+   visibilityBtn: {
+    paddingRight: 10,
+  },
+
+
+
+  card:{
+    backgroundColor: "#3d4943ff",
+    padding: 20,
+    borderRadius:5,
+    boxShadow: "4px 4px rgba(0,0,0,1)",
+  },
+
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    marginTop:20,
+    marginBottom:20,
+    paddingHorizontal: 20,
+    height:30,
+    borderWidth: 1,
+    backgroundColor: '#ff0101ff',
+    borderColor: '#000000ff',
+    },
+    
+    btnText: {
+        fontSize: 18,
+        lineHeight: 26,
+        fontWeight: '600',
+        color: '#000000ff',
+    },
+
+ link: {
+    fontSize: 20,
+    fontWeight: "italic",
+    marginVertical: 10,
+    textDecorationLine: 'underline'
+    
+  },
+
+});
