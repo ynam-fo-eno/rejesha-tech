@@ -25,7 +25,10 @@ const Login = () => {
 
 const handleLogin = async () => {
   if (!form.username || !form.password) {
-    themedAlert("Error", "Please fill in all fields");
+    themedAlert("Error", "Please fill in all fields",
+         [
+          { text: "OK", style: "/" },
+        ]);
     return;
   }
 
@@ -43,19 +46,28 @@ const handleLogin = async () => {
 
     if (!response.ok) {
       // This handles the 404 "User not found" from your Aiven database
-      themedAlert("Login Failed", data.message || "Invalid credentials");
+      themedAlert("Login Failed", data.message || "Invalid credentials",
+         [
+          { text: "OK", style: "/" },
+        ]);
       return;
     }
 
     // Success: Log the token and move to Welcome
-    themedAlert("Success", "Logged in successfully!");
+    themedAlert("Success", "Logged in successfully!",
+         [
+          { text: "OK", style: "/(tabs)/profile" },
+        ]);
     await login(data.user, data.token);
     //console.log("JWT Token:", data.token); 
     router.replace('/profile'); 
 
   } catch (error) {
     console.error(error);
-   themedAlert("Network Error", "Cannot connect to server. Ensure backend is live.");
+   themedAlert("Network Error", "Cannot connect to server. Ensure backend is live.",
+         [
+          { text: "OK", style: "/" },
+        ]);
   }
 };
 

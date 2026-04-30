@@ -7,6 +7,8 @@ import { Platform } from 'react-native';
 import { useTheme } from '../../context/ThemeContext'; 
 import MapComponent from '../../components/MapComponent';
 import themedAlert from '../../components/ThemedAlert';
+import { Link,router } from 'expo-router';
+
 
 
 const IS_MAP_ENABLED = true; 
@@ -29,7 +31,17 @@ export default function Repairs() {
           { text: "Sign In", onPress: () => router.push('/(auth)/login') }
         ]
       );
-      return;
+      
+    }
+    else{
+        themedAlert(
+        "About sending the issue",
+        "Acknowledged repair but work in progress, you'llbe connected to a technician soonest.",
+         [
+          { text: "OK", style: "/" },
+        ]
+       
+      );
     }
   };
 
@@ -80,10 +92,10 @@ export default function Repairs() {
       />
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={[styles.aiBtn, { backgroundColor: isDarkMode ? colors.grey : '#1D2A32' }]}>
+        <TouchableOpacity style={[styles.aiBtn, { backgroundColor: isDarkMode ?"rgb(15, 120, 185)" : '#1D2A32' }]}>
           <Text style={styles.btnTextWhite}>Ask AI Diagnostic</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.techBtn, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity onPress={handleAddRepair} style={[styles.techBtn, { backgroundColor:"rgb(15, 120, 185)" }]}>
           <Text style={styles.btnTextWhite}>Send to Technician</Text>
         </TouchableOpacity>
       </View>

@@ -55,14 +55,20 @@ const [form, setForm] = useState({
 const handleRegister = async () => {
   // 1. Validation (Added lName and fName checks)
   if (!form.fName || !form.lName || !form.username || !form.email || !form.password || !role1) {
-    themedAlert("Error", "Please fill all required fields (including Main Role)");
+    themedAlert("Error", "Please fill all required fields (including Main Role)",
+         [
+          { text: "OK", style: "/" },
+        ]);
     return;
   }
 
   if (errors.fName || errors.lName) {
     themedAlert(
       "Validation Error", 
-      "You cannot sign up with numbers or symbols in your name. Please correct the highlighted fields."
+      "You cannot sign up with numbers or symbols in your name. Please correct the highlighted fields.",
+         [
+          { text: "OK", style: "/" },
+        ]
     );
     return;
   }
@@ -78,7 +84,8 @@ const handleRegister = async () => {
         email: form.email,
         password: form.password,
         role1: role1,
-        role2: role2, // This can be null, which is fine
+        role2: role2,
+
       }),
     });
 
@@ -86,17 +93,27 @@ const handleRegister = async () => {
 
     // 2. The !response.ok check (The "Anti-Crash" logic)
     if (!response.ok) {
-      themedAlert("Registration Failed", data.error || data.message || "An error occurred");
+      themedAlert("Registration Failed", data.error || data.message || "An error occurred",
+         [
+          { text: "OK", style: "/" },
+        ]
+      );
       return;
     }
 
     // 3. Success
-    themedAlert("Success", "Account created! Please log in.");
+    themedAlert("Success", "Account created! Please log in.",
+         [
+          { text: "OK", style: "/" },
+        ]);
     router.replace('/'); 
 
   } catch (error) {
     console.error(error);
-    themedAlert("Network Error", "Cannot connect to server. Check your internet.");
+    themedAlert("Network Error", "Cannot connect to server. Check your internet.",
+         [
+          { text: "OK", style: "/" },
+        ]);
   }
 };
 
