@@ -14,7 +14,6 @@ export default function Profile() {
   const { colors, isDarkMode } = useTheme();
   const [uploading, setUploading] = useState(false);
 
-  // 🎨 THEME OVERRIDES (Cyan/Blue/Beige)
   const brandCyan = '#00E5FF';
   const brandBlue = '#0077B6';
   const brandBeige = isDarkMode ? '#1A1A1A' : '#F5F5DC';
@@ -31,9 +30,9 @@ let result = await ImagePicker.launchImageLibraryAsync({
   mediaTypes: ['images'],
   allowsEditing: true,
   aspect: [1, 1],
-  quality: 0.5, // You have this
+  quality: 0.5, 
   base64: true,
-  width: 500, // Optional: Scales the image down to 500px to save bandwidth
+  width: 500, 
 });
 
   if (!result.canceled) {
@@ -43,7 +42,6 @@ let result = await ImagePicker.launchImageLibraryAsync({
 
 const uploadToBackend = async (base64) => {
   setUploading(true);
-  console.log("🌐 WEB DEBUG: Starting upload to", BASE_URL);
 
   try {
     const token = await AsyncStorage.getItem('jwtToken'); 

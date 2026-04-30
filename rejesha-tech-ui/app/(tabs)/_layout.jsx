@@ -4,13 +4,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
-  const insets = useSafeAreaInsets(); // This is the magic hook
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#ff0101ff", // Rejesha Red
+          tabBarActiveTintColor: "#00E5FF",
           tabBarInactiveTintColor: "#444",
           headerStyle: { backgroundColor: "#899b9eff" },
           headerTitleAlign: "center",
@@ -47,9 +47,13 @@ export default function TabsLayout() {
         />
       </Tabs>
 
-      {/* We apply the bottom inset as padding here. 
-          This ensures "TECH" sits perfectly above the home bar on iPhone 
-          and the virtual buttons on Android.
+      {/* The footer below isn't necessary but pairs nicely
+      (in the developer's opinion) with the name each page gets on the 
+      bottom navigation bar, so:
+      1. Profile - You and Tech
+      2. Repairs - Fix Your Tech
+      3. Products - Buy/Sell Tech
+      4. Settings- Setting Rejesha Tech
       */}
       <View style={[
         styles.techFooter, 
@@ -68,8 +72,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     elevation: 0,
-    height: 65, // Gives the bar some breathing room
-      paddingBottom: 10, // Removes Android shadow for a flatter look
+    height: 65, 
+    paddingBottom: 10, 
   },
   techFooter: {
     paddingTop: 10,

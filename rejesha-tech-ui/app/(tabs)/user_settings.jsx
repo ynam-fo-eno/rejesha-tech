@@ -38,7 +38,7 @@ export default function UserSettings() {
         <TouchableOpacity 
           style={[
             styles.toggleBtn, 
-            { backgroundColor: isDarkMode ? colors.primary : '#1D2A32' }
+            { backgroundColor: isDarkMode ? "#00E5FF" : '#1D2A32' }
           ]} 
           onPress={toggleTheme}
         >

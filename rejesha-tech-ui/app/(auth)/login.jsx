@@ -63,7 +63,7 @@ const handleLogin = async () => {
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     
     <StatusBar translucent={true}></StatusBar>
-    <SafeAreaView style = {{flex: 1, backgroundColor: '#899b9eff'}}>
+    <SafeAreaView style = {{flex: 1, backgroundColor: "#0dafbe"}}>
       <View style={styles.container}>
         <View style = {styles.header}>
           <Text style = {styles.title}>WELCOME TO REJESHATECH!</Text>
@@ -74,7 +74,7 @@ const handleLogin = async () => {
 
         <View style ={styles.form}>
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>username</Text>
+            <Text style = {styles.inputLabel}>Username</Text>
             <TextInput
               style = {styles.inputControl}
               placeholder = "Enter username(case sensitive!)"
@@ -136,7 +136,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    padding: 24,    
+    padding: 24,
+    alignItems: "center",
+    width: "100%",
   },
 
   img : {
@@ -166,7 +168,10 @@ const styles = StyleSheet.create({
   },
 
   form:{
-
+    width: '100%',
+    maxWidth: 500,
+    alignItems: "center",
+    backgroundColor: "#4c8b92",
   },
 
   formAction: {
@@ -177,7 +182,7 @@ const styles = StyleSheet.create({
   formLink: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#199908ff',
+    color: '#222222',
     textAlign: 'center',
     marginBottom:10,
   },
@@ -200,11 +205,15 @@ const styles = StyleSheet.create({
     color: "#222",
     marginTop:5,
     marginBottom: 5,
+    marginLeft: 10,
 
   },
 
   input: {
-  
+    marginLeft: 10,
+    width: '80%',     
+
+    
   },
 
   inputControl: {
@@ -222,6 +231,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 12,
     backgroundColor: '#fff',
+    marginLeft: 10,
+    width: '80%',     
+
+
   },
 
    passwordInput: {
@@ -254,10 +267,12 @@ const styles = StyleSheet.create({
     marginTop:20,
     marginBottom:20,
     paddingHorizontal: 20,
-    height:30,
+    height:50,
     borderWidth: 1,
-    backgroundColor: '#ff0101',
+    backgroundColor: '#890ab3',
     borderColor: '#000000ff',
+    width: '100%',     
+
     },
     
     btnText: {
@@ -265,6 +280,8 @@ const styles = StyleSheet.create({
         lineHeight: 26,
         fontWeight: '600',
         color: '#000000ff',
+        flexDirection: "row",
+        textAlign: "center",
     },
 
  link: {

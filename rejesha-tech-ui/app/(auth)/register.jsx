@@ -105,7 +105,7 @@ const handleRegister = async () => {
     <ScrollView>
     <SafeAreaProvider>
     <StatusBar translucent={true}></StatusBar>
-    <SafeAreaView style = {{flex: 1, backgroundColor: '#929292'}}>
+    <SafeAreaView style = {{flex: 1, backgroundColor:"#7cdcdf"}}>
       <View style={styles.container}>
         <View style = {styles.header}>
           <Text style = {styles.title}>WELCOME TO REJESHATECH!</Text>
@@ -275,7 +275,9 @@ const styles = StyleSheet.create({
   form:{
     width: '100%',
     maxWidth: 400,
-    alignItems: "stretch",
+    alignItems: "center",
+    backgroundColor: "#4c8b92",
+
 
   },
 
@@ -314,7 +316,8 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    width: '100%',        
+    width: '80%',     
+    marginTop: 12,
     marginBottom: 12,
   },
 
@@ -336,6 +339,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 12,
     backgroundColor: '#fff',
+    width: '80%',        
+
   },
 
    passwordInput: {
@@ -368,10 +373,12 @@ const styles = StyleSheet.create({
     marginTop:20,
     marginBottom:20,
     paddingHorizontal: 20,
-    height:30,
+    height:40,
     borderWidth: 1,
-    backgroundColor: '#ff0101ff',
+    backgroundColor: 'rgb(15, 120, 185)',
     borderColor: '#000000ff',
+    width: '100%',        
+
     },
     
     btnText: {
@@ -390,7 +397,10 @@ const styles = StyleSheet.create({
 
 
   dropDownContainer: {
+    marginTop: 12,
     padding: 16,
+    width: '80%',        
+
   },
 
   dropdown: {
@@ -399,6 +409,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
+    backgroundColor: '#fff',
   },
   placeholderStyle: {
     fontSize: 16,

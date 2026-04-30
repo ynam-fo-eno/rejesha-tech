@@ -75,7 +75,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
     </Text>
     
     <TouchableOpacity 
-      style={[styles.requestBtn, { backgroundColor: colors.primary }]}
+      style={[styles.requestBtn, { backgroundColor: "#00E5FF" }]}
       onPress={() => router.push('/(tabs)/repairs')}
     >
       <Text style={styles.requestBtnText}>Request a Specific Part</Text>
@@ -119,7 +119,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
               <Text style={[styles.productCategory, { color: colors.grey }]}>
                 {item.category}
               </Text>
-              <Text style={[styles.productPrice, { color: colors.primary }]}>
+              <Text style={[styles.productPrice, { color: "#00E5FF" }]}>
                 Ksh {parseFloat(item.price).toLocaleString()}
               </Text>
               
@@ -131,8 +131,8 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
               )}
             </View>
 
-            <TouchableOpacity style={[styles.viewBtn, { backgroundColor: colors.primary + '20' }]}>
-              <Text style={[styles.viewBtnText, { color: colors.primary }]}>View</Text>
+            <TouchableOpacity style={[styles.viewBtn, { backgroundColor:"#00E5FF"+ '20' }]}>
+              <Text style={[styles.viewBtnText, { color: "#00E5FF" }]}>View</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -141,7 +141,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
       {/* --- FLOATING ACTION BUTTON --- */}
       {isAdmin && (
         <TouchableOpacity 
-          style={[styles.fab, { backgroundColor: colors.primary }]} 
+          style={[styles.fab, { backgroundColor: "#00E5FF" }]} 
           onPress={handleAddProduct}
         >
           <MaterialCommunityIcons name="plus" size={30} color="#fff" />

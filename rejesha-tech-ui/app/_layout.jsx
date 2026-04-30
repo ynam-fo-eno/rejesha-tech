@@ -10,21 +10,25 @@ const InitialLayout = () => {
   const segments = useSegments();
   const router = useRouter();
 
-  useEffect(() => {
-    // Wait until the AuthProvider finishes checking AsyncStorage
+ useEffect(() => {
+    // 1. Wait for the 'Elephant' to check the local storage
     if (isLoading) return;
 
-    // Determine current location
     const inAuthGroup = segments[0] === '(auth)';
-    const atRoot = segments.length === 0;
+    const atRoot = segments.length === 0 || segments[0] === 'index' || segments[0] === '';
 
-    if (!user && !inAuthGroup) {
-      // 1. Not logged in? Send them to Login
-      router.replace('/(auth)/login');
-    } else if (user && (inAuthGroup || atRoot)) {
-      // 2. Logged in? Don't let them stay on Login or Splash
-      router.replace('/(tabs)/products');
+    // 🎯 THE "OPEN DOOR" LOGIC
+    if (atRoot) {
+      // Land everyone on Repairs by default, regardless of auth status
+      router.replace('/(tabs)/repairs');
+    } else if (user && inAuthGroup) {
+      // If they are ALREADY logged in but try to go to Login/Register, 
+      // kick them back to the dashboard.
+      router.replace('/(tabs)/repairs');
     }
+    
+    // NOTE: We removed the "if (!user) redirect to login" block.
+    // This allows unauthenticated users to stay in the (tabs) group.
   }, [user, isLoading, segments]);
 
   return (

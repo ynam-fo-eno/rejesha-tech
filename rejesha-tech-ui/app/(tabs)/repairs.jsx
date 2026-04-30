@@ -6,15 +6,32 @@ import { useAuth } from '../../hooks/useAuth';
 import { Platform } from 'react-native';
 import { useTheme } from '../../context/ThemeContext'; 
 import MapComponent from '../../components/MapComponent';
+import themedAlert from '../../components/ThemedAlert';
 
 
 const IS_MAP_ENABLED = true; 
+
 
 export default function Repairs() {
   const { user } = useAuth();
   const { colors, isDarkMode } = useTheme(); 
   const [deviceImage, setDeviceImage] = useState(null);
   const [description, setDescription] = useState('');
+
+  
+  const handleAddRepair = () => {
+    if (!user) {
+      themedAlert(
+        "Account Required",
+        "You need to be signed in to log a new repair.",
+        [
+          { text: "Later", style: "cancel" },
+          { text: "Sign In", onPress: () => router.push('/(auth)/login') }
+        ]
+      );
+      return;
+    }
+  };
 
   const pickDeviceImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
