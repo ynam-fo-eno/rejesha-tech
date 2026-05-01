@@ -15,4 +15,8 @@ router.get('/profile', authMiddleware, userController.getProfile);
 //To permit a user to update their profile pic
 router.post('/update-dp',authMiddleware, userController.updateProfilePicture);
 
+// GET /api/users/technicians
+// Purpose: Fetches all users registered as Technicians
+router.get('/technicians', userController.getTechnicians);
+
 module.exports = router;

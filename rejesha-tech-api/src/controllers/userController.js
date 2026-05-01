@@ -2,10 +2,23 @@ const db = require('../db/connection');
 const cloudinary = require('../config/cloudinary');
 const User = require('../models/userModel');
 
+
+
+exports.getTechnicians = async (req, res) => {
+    try {
+        const technicians = await User.getTechnicians();
+        res.status(200).json(technicians);
+    } catch (error) {
+        console.error("Error fetching technicians:", error);
+        res.status(500).json({ error: "Failed to load technician list" });
+    }
+};
+
 exports.getProfile = async (req, res) => {
     try {
-        const [user] = await db.execute("SELECT id, fName, lName, username, email, role1,role2,image_url FROM users WHERE id = ?", [req.user.id]);
-        res.json(user[0]);
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -56,9 +69,5 @@ exports.updateProfilePicture = async (req, res) => {
   }
 };
 
-exports.listTechnicians = (req, res) => {
-  User.getTechnicians((err, results) => {
-    if (err) return res.status(500).json({ error: "Failed to load technicians" });
-    res.json(results);
-  });
-};
+
+

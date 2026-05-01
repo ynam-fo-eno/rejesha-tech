@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, FlatList, ActivityIndicator, Modal, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, FlatList, ActivityIndicator, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,10 +14,10 @@ export default function Repairs() {
   const { user } = useAuth();
   const { colors, isDarkMode } = useTheme();
   
-  // Standardized Form State to match DB exactly
+  // Form State
   const [deviceImage, setDeviceImage] = useState(null);
-  const [issue_description, setIssueDescription] = useState(''); // Fixed naming mismatch
-  const [village_name, setVillageName] = useState(''); // Standardized for DB
+  const [issue_description, setIssueDescription] = useState('');
+  const [village_name, setVillageName] = useState('');
   const [landmark, setLandmark] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   
@@ -37,28 +37,48 @@ export default function Repairs() {
       const data = await response.json();
       setTechnicians(data);
     } catch (e) { 
-      // Local fallback for Athi River testing
+      // Fallback for demo stability
       setTechnicians([{id: 5, username: 'Timothy'}, {id: 9, username: 'Lionel'}]);
     }
   };
 
   const fetchAssignedRepairs = async () => {
-    console.log("Fetching for User ID:", user?.id);
     try {
       const response = await fetch(`${BASE_URL}/api/repairs/my-repairs/${user.id}`);
+      if (!response.ok) return;
       const data = await response.json();
-      console.log("Server returned:", data);
       setAssignedRepairs(data);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Fetch repairs error:", e); }
   };
 
   const handleInitialSend = () => {
-    // Corrected validation references
     if (!deviceImage || !issue_description || !village_name || !landmark) {
-      themedAlert("Missing Info", "Please fill all fields and add a photo.");
+      themedAlert("Missing Info", "Please provide a photo, description, and location.");
       return;
     }
     setModalVisible(true);
+  };
+
+  const uploadToCloudinary = async (imageAsset) => {
+    let base64Img = `data:image/jpg;base64,${imageAsset.base64}`;
+    let data = {
+      "file": base64Img,
+      "upload_preset": "rejesha_uploads", 
+    };
+
+    try {
+      // Corrected Cloud Name: dyh1tecel
+      let res = await fetch("https://api.cloudinary.com/v1_1/dyh1tecel/image/upload", {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      let result = await res.json();
+      return result.secure_url; 
+    } catch (err) {
+      console.error("Cloudinary Error:", err);
+      return null;
+    }
   };
 
   const confirmAndSend = async (techId) => {
@@ -69,11 +89,14 @@ export default function Repairs() {
       let { status } = await Location.requestForegroundPermissionsAsync();
       let loc = (status === 'granted') ? await Location.getCurrentPositionAsync({}) : null;
 
+      const publicImageUrl = await uploadToCloudinary(deviceImage);
+      if (!publicImageUrl) throw new Error("Upload failed");
+
       const repairPayload = {
         fundi_id: techId,
-        image_url: deviceImage, 
+        image_url: publicImageUrl, 
         issue_description: issue_description,
-        village_name: village_name, // Matched state variable
+        village_name: village_name,
         landmark: landmark,
         latitude: loc?.coords.latitude || 0,
         longitude: loc?.coords.longitude || 0
@@ -86,64 +109,61 @@ export default function Repairs() {
       });
 
       if (response.ok) {
-        themedAlert("Success", "Repair request logged in Aiven DB!");
-        setTimeout(() => {
-          router.back();
-        }, 1500);
-      } else {
-        throw new Error("Server Error");
+        themedAlert("Success", "Repair request logged with Cloudinary image!");
+        setTimeout(() => router.back(), 1500);
       }
     } catch (error) {
-      themedAlert("Error", "Check your backend terminal for SQL sequence errors.");
+      themedAlert("Error", "Check Cloudinary preset or Internet connection.");
     } finally {
       setLoading(false);
     }
   };
 
   const pickDeviceImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 0.5 });
-    if (!result.canceled) setDeviceImage(result.assets[0].uri);
+    let result = await ImagePicker.launchImageLibraryAsync({ 
+      allowsEditing: true, 
+      quality: 0.5,
+      base64: true 
+    });
+    if (!result.canceled) setDeviceImage(result.assets[0]);
   };
 
- const renderTechnicianView = () => (
-  <View style={[styles.viewContainer, { backgroundColor: colors.background }]}>
-    <Text style={[styles.sectionTitle, { color: colors.text }]}>My Assigned Tasks</Text>
-    
-    <FlatList
-      data={assignedRepairs}
-      keyExtractor={(item) => item.id.toString()}
-      // 1. Remove the /> from the end of this line
-      ListEmptyComponent={
-        <Text style={{ color: colors.grey, textAlign: 'center', marginTop: 20 }}>
-          No assigned repairs found for technician ID {user?.id}
-        </Text>
-      } 
-      // 2. renderItem now stays safely inside the FlatList "fortress"
-      renderItem={({ item }) => (
-        <View style={[styles.requestCard, { backgroundColor: colors.card }]}>
-          <Image source={{ uri: item.image_url }} style={styles.cardThumb} />
-          <View style={styles.cardContent}>
-            <Text style={{ color: colors.text, fontWeight: 'bold' }}>{item.village_name}</Text>
-            <Text style={{ color: colors.grey }}>{item.issue_description}</Text>
+  const renderTechnicianView = () => (
+    <View style={[styles.viewContainer, { backgroundColor: colors.background }]}>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>My Assigned Tasks</Text>
+      <FlatList
+        data={assignedRepairs}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={
+          <Text style={{ color: colors.grey, textAlign: 'center', marginTop: 20 }}>
+            No assigned repairs found for technician ID {user?.id}
+          </Text>
+        }
+        renderItem={({ item }) => (
+          <View style={[styles.requestCard, { backgroundColor: colors.card }]}>
+            <Image source={{ uri: item.image_url }} style={styles.cardThumb} />
+            <View style={styles.cardContent}>
+              <Text style={{ color: colors.text, fontWeight: 'bold' }}>{item.village_name}</Text>
+              <Text style={{ color: colors.grey }}>{item.issue_description}</Text>
+            </View>
           </View>
-        </View>
-      )}
-    // 3. This is where you finally close the component
-    />
-  </View>
-);
+        )}
+      />
+    </View>
+  );
 
   const renderClientView = () => (
     <ScrollView style={[styles.viewContainer, { backgroundColor: colors.background }]}>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Request a Repair</Text>
       
       <TouchableOpacity style={[styles.imagePlaceholder, {borderColor: colors.grey}]} onPress={pickDeviceImage}>
-        {deviceImage ? <Image source={{ uri: deviceImage }} style={styles.uploadedImage} /> : <MaterialCommunityIcons name="camera-plus" size={40} color={colors.grey} />}
+        {deviceImage ? <Image source={{ uri: deviceImage.uri }} style={styles.uploadedImage} /> : <MaterialCommunityIcons name="camera-plus" size={40} color={colors.grey} />}
       </TouchableOpacity>
 
       <TextInput
         style={[styles.textArea, { backgroundColor: colors.card, color: colors.text }]}
         placeholder="Issue description..."
+        placeholderTextColor={colors.grey}
         value={issue_description}
         onChangeText={setIssueDescription}
         multiline
@@ -152,13 +172,15 @@ export default function Repairs() {
       <TextInput
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
         placeholder="Village (e.g. Mavoko)"
+        placeholderTextColor={colors.grey}
         value={village_name}
         onChangeText={setVillageName}
       />
       
       <TextInput
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
-        placeholder="Landmark (e.g. Near Shell)"
+        placeholder="Landmark"
+        placeholderTextColor={colors.grey}
         value={landmark}
         onChangeText={setLandmark}
       />
