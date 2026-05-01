@@ -69,7 +69,7 @@ export default function Repairs() {
 
     try {
       // Locked in the correct Cloud Name: dyh1tecel
-      let res = await fetch("https://api.cloudinary.com/v1_1/dyh1tecel/image/upload", {
+      let res = await fetch("https://api.cloudinary.com/v1_1/dyh1tecei/image/upload", {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(data),
