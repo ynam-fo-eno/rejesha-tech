@@ -40,7 +40,10 @@ export default {
       "expo-router"
     ],
     "extra": {
-      "router": {},
+      "router": {
+        origin: false,
+      },
+      geminiApiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
       "eas": {
         "projectId": "73fd464e-6479-4469-bced-75edcc94a280"
       }

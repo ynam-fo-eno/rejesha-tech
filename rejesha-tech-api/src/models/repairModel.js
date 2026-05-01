@@ -5,8 +5,8 @@ const Repair = {
         // Sequenced to match image_4d0654.png physical DB order
         const query = `
             INSERT INTO repairs 
-            (fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark,client_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
+            (fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark,client_id,ai_thoughts) 
+            VALUES (?, ?, ?, ?, ?, ?, ?,?,?)`;
         
         const values = [
             repairData.fundi_id,
@@ -17,6 +17,8 @@ const Repair = {
             repairData.village_name,
             repairData.landmark,
             repairData.client_id,
+            repairData.ai_thoughts,
+
 
 
         ];

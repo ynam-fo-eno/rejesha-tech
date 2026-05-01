@@ -10,6 +10,9 @@ import themedAlert from '../../components/ThemedAlert';
 import { router } from 'expo-router';
 import { BASE_URL } from "../../constants/config";
 
+// 1. Import the Google Gen AI SDK
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
 export default function Repairs() {
   const { user } = useAuth();
   const { colors, isDarkMode } = useTheme();
@@ -20,6 +23,11 @@ export default function Repairs() {
   const [village_name, setVillageName] = useState('');
   const [landmark, setLandmark] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  
+  // AI State
+  const [aiDiagnosis, setAiDiagnosis] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiModalVisible, setAiModalVisible] = useState(false);
   
   // Data State
   const [technicians, setTechnicians] = useState([]); 
@@ -37,7 +45,6 @@ export default function Repairs() {
       const data = await response.json();
       setTechnicians(data);
     } catch (e) { 
-      // Fallback for demo stability
       setTechnicians([{id: 5, username: 'Timothy'}, {id: 9, username: 'Lionel'}]);
     }
   };
@@ -49,6 +56,47 @@ export default function Repairs() {
       const data = await response.json();
       setAssignedRepairs(data);
     } catch (e) { console.error("Fetch repairs error:", e); }
+  };
+
+  // 2. The AI Core Function
+  const handleGemini = async () => {
+    // Need at least a description to guide the AI
+    if (!issue_description && !deviceImage) {
+      themedAlert("Missing Info", "Please provide a description or a photo of the issue for the AI to analyze.");
+      return;
+    }
+
+    setIsAiLoading(true);
+    try {
+      // Initialize the SDK using the EXPO_PUBLIC key
+      const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+
+      const systemPrompt = `You are the Rejesha Tech AI Diagnostic Expert. Your goal is to analyze descriptions and images of broken electronic devices. Provide a professional, concise technical diagnosis. Identify likely faulty components. Estimate the repair complexity and always include a polite disclaimer that a physical inspection by a Rejesha technician is required for a final quote. \n\nUser Description: ${issue_description || "No text description provided. Rely on image."}`;
+
+      const imageParts = [];
+      // If user uploaded an image, prepare the base64 object for Gemini
+      if (deviceImage && deviceImage.base64) {
+        imageParts.push({
+          inlineData: {
+            data: deviceImage.base64,
+            mimeType: "image/jpeg"
+          }
+        });
+      }
+
+      // Fire the request (combining text and image array)
+      const result = await model.generateContent([systemPrompt, ...imageParts]);
+      const responseText = await result.response.text();
+
+      setAiDiagnosis(responseText);
+      setAiModalVisible(true);
+    } catch (error) {
+      console.error("Gemini Error:", error);
+      themedAlert("AI System Offline", "Failed to retrieve diagnosis. Check network or API key permissions.");
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   const handleInitialSend = () => {
@@ -68,7 +116,6 @@ export default function Repairs() {
     };
 
     try {
-      // Locked in the correct Cloud Name: dyh1tecel
       let res = await fetch("https://api.cloudinary.com/v1_1/dyh1tecei/image/upload", {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -93,7 +140,7 @@ export default function Repairs() {
       const publicImageUrl = await uploadToCloudinary(deviceImage);
       if (!publicImageUrl) throw new Error("Upload failed");
 
-      // Payload now includes client_id for your relational DB
+      // 3. Include ai_thoughts in the payload going to DB
       const repairPayload = {
         fundi_id: techId,
         client_id: user?.id, 
@@ -102,7 +149,8 @@ export default function Repairs() {
         village_name: village_name,
         landmark: landmark,
         latitude: loc?.coords.latitude || 0,
-        longitude: loc?.coords.longitude || 0
+        longitude: loc?.coords.longitude || 0,
+        ai_thoughts: aiDiagnosis || "User skipped AI diagnostic."
       };
 
       const response = await fetch(`${BASE_URL}/api/repairs/submit`, {
@@ -112,11 +160,11 @@ export default function Repairs() {
       });
 
       if (response.ok) {
-        // Clear the board instantly so the user knows it worked without buffering
         setDeviceImage(null);
         setIssueDescription('');
         setVillageName('');
         setLandmark('');
+        setAiDiagnosis(''); // Clear AI memory
         
         themedAlert("Success", "Repair request logged! Technician notified.");
         setTimeout(() => router.back(), 1500);
@@ -129,6 +177,7 @@ export default function Repairs() {
   };
 
   const pickDeviceImage = async () => {
+    // Important: base64 is required to send image inline to Gemini
     let result = await ImagePicker.launchImageLibraryAsync({ 
       allowsEditing: true, 
       quality: 0.5,
@@ -142,7 +191,7 @@ export default function Repairs() {
       <Text style={[styles.sectionTitle, { color: colors.text }]}>My Assigned Tasks</Text>
       <FlatList
         data={assignedRepairs}
-        keyExtractor={(item) => item.id.toString()} // Fixed to unique event ID
+        keyExtractor={(item) => item.id.toString()} 
         ListEmptyComponent={
           <Text style={{ color: colors.grey, textAlign: 'center', marginTop: 20 }}>
             No assigned repairs found for technician ID {user?.id}
@@ -151,12 +200,11 @@ export default function Repairs() {
         renderItem={({ item }) => (
           <View style={[styles.requestCard, { backgroundColor: colors.card }]}>
             <Image source={{ uri: item.image_url }} style={styles.cardThumb} />
-            <View style={styles.cardContent}>
-              {/* Added Client Name and AI Thoughts mapping */}
+            <View style={[styles.cardContent, {flex: 1}]}>
               <Text style={{ color: colors.text, fontWeight: 'bold' }}>From: {item.client_name || `Client ${item.client_id}`}</Text>
               <Text style={{ color: colors.grey }}>{item.village_name} - {item.issue_description}</Text>
               <Text style={{ color: "rgb(15, 120, 185)", fontSize: 12, marginTop: 4, fontWeight: 'bold' }}>
-                AI Diagnostic: {item.ai_thoughts || 'N/A'}
+                AI Notes: {item.ai_thoughts || 'N/A'}
               </Text>
             </View>
           </View>
@@ -199,15 +247,20 @@ export default function Repairs() {
       />
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={[styles.aiBtn, { backgroundColor: "rgb(15, 120, 185)" }]}>
-          <Text style={styles.btnTextWhite}>AI Diagnostic</Text>
+        <TouchableOpacity 
+          style={styles.aiBtn} 
+          onPress={handleGemini}
+          disabled={isAiLoading}
+        >
+          {isAiLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnTextWhite}>AI Diagnostic</Text>}
         </TouchableOpacity>
         
         <TouchableOpacity onPress={handleInitialSend} style={styles.techBtn}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnTextWhite}>Send to Technician</Text>}
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnTextWhite}>Send to Tech</Text>}
         </TouchableOpacity>
       </View>
 
+      {/* Technician Selection Modal */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
@@ -217,7 +270,35 @@ export default function Repairs() {
                 <Text style={[styles.techName, { color: colors.text }]}>{tech.username}</Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity onPress={() => setModalVisible(false)}><Text style={{ color: 'red', marginTop: 10 }}>Cancel</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={{ color: 'red', marginTop: 15, textAlign: 'center', fontWeight: 'bold' }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* AI Results Modal */}
+      <Modal visible={aiModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card, maxHeight: '80%' }]}>
+            <Text style={[styles.modalTitle, { color: colors.primary }]}>Rejesha AI Assessment</Text>
+            <ScrollView style={{ marginBottom: 20 }}>
+              <Text style={{ color: colors.text, lineHeight: 22 }}>{aiDiagnosis}</Text>
+            </ScrollView>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <TouchableOpacity style={{ padding: 10 }} onPress={() => setAiModalVisible(false)}>
+                <Text style={{ color: colors.grey, fontWeight: 'bold' }}>Close</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.techBtn, { flex: 0.7, padding: 10 }]} 
+                onPress={() => {
+                  setAiModalVisible(false);
+                  handleInitialSend();
+                }}
+              >
+                <Text style={styles.btnTextWhite}>Proceed to Tech</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -236,16 +317,16 @@ const styles = StyleSheet.create({
   uploadedImage: { width: '100%', height: '100%', borderRadius: 13 },
   textArea: { borderRadius: 15, padding: 15, marginTop: 15, height: 80, textAlignVertical: 'top' },
   input: { borderRadius: 15, padding: 15, marginTop: 10 },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 },
-  aiBtn: { flex: 0.48, padding: 15, borderRadius: 12, alignItems: 'center' },
-  techBtn: { flex: 0.48, backgroundColor: "rgb(15, 120, 185)", padding: 15, borderRadius: 12, alignItems: 'center' },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginBottom: 15 },
+  aiBtn: { flex: 0.48, padding: 15, borderRadius: 12, alignItems: 'center', backgroundColor: "#2e7d32" }, // Distinct green for AI
+  techBtn: { flex: 0.48, backgroundColor: "rgb(15, 120, 185)", padding: 15, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   btnTextWhite: { color: '#fff', fontWeight: 'bold' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '80%', borderRadius: 20, padding: 20 },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  modalContent: { width: '85%', borderRadius: 20, padding: 20 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
   techOption: { padding: 15, borderBottomWidth: 0.5, borderBottomColor: '#333' },
   techName: { fontSize: 16 },
   requestCard: { flexDirection: 'row', padding: 15, borderRadius: 15, marginBottom: 10 },
-  cardThumb: { width: 50, height: 50, borderRadius: 8 },
+  cardThumb: { width: 60, height: 60, borderRadius: 8 },
   cardContent: { marginLeft: 15 }
 });

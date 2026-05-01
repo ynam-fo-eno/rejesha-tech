@@ -1,7 +1,7 @@
 const Repair = require('../models/repairModel');
 
 exports.handleRepairRequest = async (req, res) => {
-  const { fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark, client_id } = req.body;
+  const { fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark, client_id,ai_thoughts } = req.body;
 
   // 1. Strict Validation Check
   if (!fundi_id || !issue_description || !village_name || !landmark) {
@@ -17,7 +17,8 @@ exports.handleRepairRequest = async (req, res) => {
     longitude: longitude || null,
     village_name,
     landmark,
-    client_id // The missing piece, now included!
+    client_id,
+    ai_thoughts
   };
 
   // 3. Database Execution (Modernized)
