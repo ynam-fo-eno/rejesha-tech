@@ -8,6 +8,9 @@ const app = express();
 const authRoutes = require('./src/routes/auth');
 const userRoutes = require('./src/routes/users');
 const productRoutes = require('./src/routes/productRoutes');
+const repairRoutes = require('./src/routes/repairRoutes');
+
+// This line 'mounts' your routes. 
 
 // 2. MIDDLEWARE (The "Bouncers")
 app.use(cors());
@@ -21,6 +24,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/api/auth', authRoutes);       // Handles login/register
 app.use('/api/users', userRoutes);      // Handles profile/DP updates
 app.use('/api/products', productRoutes); // Handles the marketplace
+app.use('/api/repairs', repairRoutes); //For repairs page
 
 // Health Check
 app.get('/', (req, res) => {

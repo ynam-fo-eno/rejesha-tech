@@ -1,5 +1,6 @@
 const db = require('../db/connection');
 const cloudinary = require('../config/cloudinary');
+const User = require('../models/userModel');
 
 exports.getProfile = async (req, res) => {
     try {
@@ -53,4 +54,11 @@ exports.updateProfilePicture = async (req, res) => {
     console.error("DP Update Error:", error);
     res.status(500).json({ error: "Failed to update profile picture" });
   }
+};
+
+exports.listTechnicians = (req, res) => {
+  User.getTechnicians((err, results) => {
+    if (err) return res.status(500).json({ error: "Failed to load technicians" });
+    res.json(results);
+  });
 };

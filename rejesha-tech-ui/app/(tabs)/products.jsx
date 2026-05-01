@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../hooks/useAuth';
 import ThemedLoader from '../../components/ThemedLoader';
 import { BASE_URL } from '../../constants/config';
+import { Colors } from '../../constants/Colors';
+
 
 
 export default function BuySellTech() {
@@ -141,7 +143,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
       {/* --- FLOATING ACTION BUTTON --- */}
       {isAdmin && (
         <TouchableOpacity 
-          style={[styles.fab, { backgroundColor: "#00E5FF" }]} 
+          style={[styles.fab, { backgroundColor: Colors.primary }]} 
           onPress={handleAddProduct}
         >
           <MaterialCommunityIcons name="plus" size={30} color="#fff" />
