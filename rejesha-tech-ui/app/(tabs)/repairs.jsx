@@ -60,6 +60,7 @@ export default function Repairs() {
   };
 
   const uploadToCloudinary = async (imageAsset) => {
+    console.log("Image Data Captured");
     let base64Img = `data:image/jpg;base64,${imageAsset.base64}`;
     let data = {
       "file": base64Img,
@@ -67,7 +68,7 @@ export default function Repairs() {
     };
 
     try {
-      // Corrected Cloud Name: dyh1tecel
+      // Locked in the correct Cloud Name: dyh1tecel
       let res = await fetch("https://api.cloudinary.com/v1_1/dyh1tecel/image/upload", {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -92,8 +93,10 @@ export default function Repairs() {
       const publicImageUrl = await uploadToCloudinary(deviceImage);
       if (!publicImageUrl) throw new Error("Upload failed");
 
+      // Payload now includes client_id for your relational DB
       const repairPayload = {
         fundi_id: techId,
+        client_id: user?.id, 
         image_url: publicImageUrl, 
         issue_description: issue_description,
         village_name: village_name,
@@ -109,7 +112,13 @@ export default function Repairs() {
       });
 
       if (response.ok) {
-        themedAlert("Success", "Repair request logged with Cloudinary image!");
+        // Clear the board instantly so the user knows it worked without buffering
+        setDeviceImage(null);
+        setIssueDescription('');
+        setVillageName('');
+        setLandmark('');
+        
+        themedAlert("Success", "Repair request logged! Technician notified.");
         setTimeout(() => router.back(), 1500);
       }
     } catch (error) {
@@ -133,7 +142,7 @@ export default function Repairs() {
       <Text style={[styles.sectionTitle, { color: colors.text }]}>My Assigned Tasks</Text>
       <FlatList
         data={assignedRepairs}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()} // Fixed to unique event ID
         ListEmptyComponent={
           <Text style={{ color: colors.grey, textAlign: 'center', marginTop: 20 }}>
             No assigned repairs found for technician ID {user?.id}
@@ -143,8 +152,12 @@ export default function Repairs() {
           <View style={[styles.requestCard, { backgroundColor: colors.card }]}>
             <Image source={{ uri: item.image_url }} style={styles.cardThumb} />
             <View style={styles.cardContent}>
-              <Text style={{ color: colors.text, fontWeight: 'bold' }}>{item.village_name}</Text>
-              <Text style={{ color: colors.grey }}>{item.issue_description}</Text>
+              {/* Added Client Name and AI Thoughts mapping */}
+              <Text style={{ color: colors.text, fontWeight: 'bold' }}>From: {item.client_name || `Client ${item.client_id}`}</Text>
+              <Text style={{ color: colors.grey }}>{item.village_name} - {item.issue_description}</Text>
+              <Text style={{ color: "rgb(15, 120, 185)", fontSize: 12, marginTop: 4, fontWeight: 'bold' }}>
+                AI Diagnostic: {item.ai_thoughts || 'N/A'}
+              </Text>
             </View>
           </View>
         )}

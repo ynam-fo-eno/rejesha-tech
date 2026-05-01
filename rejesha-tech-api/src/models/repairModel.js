@@ -5,8 +5,8 @@ const Repair = {
         // Sequenced to match image_4d0654.png physical DB order
         const query = `
             INSERT INTO repairs 
-            (fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            (fundi_id, image_url, issue_description, latitude, longitude, village_name, landmark,client_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
         
         const values = [
             repairData.fundi_id,
@@ -15,14 +15,22 @@ const Repair = {
             repairData.latitude,
             repairData.longitude,
             repairData.village_name,
-            repairData.landmark
+            repairData.landmark,
+            repairData.client_id,
+
+
         ];
         
         return await db.execute(query, values);
     },
 
     getByTechnician: async (fundi_id) => {
-        const query = "SELECT * FROM repairs WHERE fundi_id = ? ORDER BY created_at DESC";
+        const query = `
+            SELECT r.*, u.username AS client_name 
+            FROM repairs r 
+            LEFT JOIN users u ON r.client_id = u.id 
+            WHERE r.fundi_id = ? 
+            ORDER BY r.created_at DESC`;
         const [rows] = await db.execute(query, [fundi_id]);
         return rows;
     }
