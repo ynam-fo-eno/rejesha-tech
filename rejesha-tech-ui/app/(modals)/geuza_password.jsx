@@ -2,17 +2,17 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Logo from "../../assets/img/rejesha-tech-logo.png"; 
+import Logo from "../../assets/img/rejesha-tech-splash.png"; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link,router } from 'expo-router';
 import { BASE_URL } from '../../constants/config';
 import { useAuth } from '../../hooks/useAuth';
 import themedAlert from "../../components/ThemedAlert";
 
-const Login = () => {
+const PasswordReset = () => {
   const [form, setForm] = useState({
-    username: "",
     password: "",
+    passwordConfirmed: "",
   });
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
@@ -21,90 +21,62 @@ const Login = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const { login } = useAuth();
+  const { passwordChange } = useAuth();
 
-const handleLogin = async () => {
-  if (!form.username || !form.password) {
-    themedAlert("Error", "Please fill in all fields",
+const handlePasswordChange = async () => {
+  if (!form.passwordConfirmed || !form.password) {
+    themedAlert("Incomplete.","Please fill in all fields",
          [
           { text: "OK", style: "/" },
         ]);
     return;
   }
-
-  try {
-    const response = await fetch(`${BASE_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: form.username,
-        password: form.password
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // This handles the 404 "User not found" from your Aiven database
-      themedAlert("Login Failed", data.message || "Invalid credentials",
+   if (form.passwordConfirmed != form.password) {
+    themedAlert("Incorrect", "Passwords need to match for a successful update.",
          [
           { text: "OK", style: "/" },
         ]);
-      return;
-    }
-
-    // Success: Log the token and move to Welcome
-    themedAlert("Success", "Logged in successfully!",
-         [
-          { text: "OK", style: "/(tabs)/profile" },
-        ]);
-    await login(data.user, data.token);
-    //console.log("JWT Token:", data.token); 
-    router.replace('/profile'); 
-
-  } catch (error) {
-    console.error(error);
-   themedAlert("Network Error", "Cannot connect to server. Ensure backend is live.",
-         [
-          { text: "OK", style: "/" },
-        ]);
+    return;
   }
+  else {
+  themedAlert(
+    "In progress", 
+    "Sorry yet to work but will be coming soon!",
+    [
+      { 
+        text: "BACK", 
+        onPress: () => router.replace('/login') 
+      }
+    ]
+  );
+}
+
+ 
 };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     
     <StatusBar translucent={true}></StatusBar>
-    <SafeAreaView style = {{flex: 1, backgroundColor: "#0dafbe"}}>
+    <SafeAreaView style = {{flex: 1, backgroundColor: "#80632a"}}>
       <View style={styles.container}>
         <View style = {styles.header}>
           <Text style = {styles.title}>WELCOME TO REJESHATECH!</Text>
           <Image source = {Logo} style = {styles.img}/>
           <Text style = {styles.subtitle}>Serving Technician and Client Anywhere in Kenya</Text>
-          <Text style = {styles.title}>Login Page</Text>
+          <Text style = {styles.title}>Password Reset Page- sorry....</Text>
         </View>
 
         <View style ={styles.form}>
-          <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>Username</Text>
-            <TextInput
-              style = {styles.inputControl}
-              placeholder = "Enter username(case sensitive!)"
-              placeholderTextColor= "#929292"
-              value = {form.username}
-              onChangeText={username => setForm({...form,username})}
-            />
-          </View>
-
-          <Text style = {styles.inputLabel}>Password</Text>
-
+          
+          <Text style = {styles.inputLabel}>New Password</Text>
           <View style = {styles.passwordInputContainer}>
             <TextInput
               style = {styles.passwordInput}
-              placeholder = "Enter password"
+              placeholder = "Enter new password"
               placeholderTextColor= "#929292"
               autoCapitalize="none"
-              secureTextEntry={isPasswordVisible} // Bind the state here
+              secureTextEntry={isPasswordVisible} 
               value = {form.password}
               onChangeText={password => setForm({...form,password})}
             />
@@ -117,31 +89,42 @@ const handleLogin = async () => {
             </Pressable>
           </View>
 
+          <Text style = {styles.inputLabel}>Confirm New Password</Text>
+          <View style = {styles.passwordInputContainer}>
+            <TextInput
+              style = {styles.passwordInput}
+              placeholder = "Make sure it matches!"
+              placeholderTextColor= "#929292"
+              autoCapitalize="none"
+              secureTextEntry={isPasswordVisible} 
+              value = {form.passwordConfirmed}
+              onChangeText={passwordConfirmed => setForm({...form,passwordConfirmed})}
+            />
+            <Pressable onPress={togglePasswordVisibility} style={styles.visibilityBtn}>
+              <MaterialCommunityIcons
+                name={isPasswordVisible ? 'eye-off' : 'eye'} // Change icon based on state
+                size={16}
+                color="#232323"
+              />
+            </Pressable>
+          </View>
+
           <View style={styles.formAction}>
-            <TouchableOpacity onPress={handleLogin}>
+            <TouchableOpacity onPress={handlePasswordChange}>
               <View style={styles.btn}>
-                 <Text style={styles.btnText}>Sign In</Text> 
+                 <Text style={styles.btnText}>Make New Password</Text> 
               </View>
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.replace("/(modals)/geuza_password")}>
-             <Text style={styles.formLink}>Forgot password?</Text>
-           </TouchableOpacity>
           </View>
       </View>
-       <TouchableOpacity>
-         <Text style={styles.formFooter}>
-            Don't have an account?{' '}
-            <Link href="/register" style={styles.link}>Sign Up</Link>
-          </Text>
-          </TouchableOpacity>
-          </View> 
+       
+        </View> 
     </SafeAreaView> 
     </ScrollView>
   );
 }
 
-export default Login;
+export default PasswordReset;
 
 const styles = StyleSheet.create({
   container: {
@@ -183,7 +166,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 500,
     alignItems: "center",
-    backgroundColor: "#4c8b92",
+    backgroundColor: "#D3CCBE",
   },
 
   formAction: {
@@ -282,7 +265,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     height:50,
     borderWidth: 1,
-    backgroundColor: '#890ab3',
+    backgroundColor: '#95876b',
     borderColor: '#000000ff',
     width: '100%',     
 

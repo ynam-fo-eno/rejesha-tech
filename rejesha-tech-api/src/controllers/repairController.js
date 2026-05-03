@@ -5,7 +5,7 @@ exports.handleRepairRequest = async (req, res) => {
 
   // 1. Strict Validation Check
   if (!fundi_id || !issue_description || !village_name || !landmark) {
-    return res.status(400).json({ message: "All fields are required to help the technician find you." });
+    return res.status(400).json({ message: "All fields are required to help the technician find you!" });
   }
 
   // 2. Data Formatting

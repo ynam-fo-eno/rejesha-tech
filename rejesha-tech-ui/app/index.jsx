@@ -1,5 +1,6 @@
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
+//See how simple it is...our index converted to a loading screen!
 export default function Index() {
   return (
     <View style={styles.loadingContainer}>

@@ -7,17 +7,19 @@ import { ThemeProvider } from '../context/ThemeContext';
 
 const InitialLayout = () => {
   const { user, isLoading } = useAuth();
+
+  //Expo splits your path name into segments with this hook
   const segments = useSegments();
+
   const router = useRouter();
 
  useEffect(() => {
-    // 1. Wait for the 'Elephant' to check the local storage
+    
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
     const atRoot = segments.length === 0 || segments[0] === 'index' || segments[0] === '';
 
-    // 🎯 THE "OPEN DOOR" LOGIC
     if (atRoot) {
       // Land everyone on Repairs by default, regardless of auth status
       router.replace('/(tabs)/repairs');
@@ -26,9 +28,6 @@ const InitialLayout = () => {
       // kick them back to the dashboard.
       router.replace('/(tabs)/repairs');
     }
-    
-    // NOTE: We removed the "if (!user) redirect to login" block.
-    // This allows unauthenticated users to stay in the (tabs) group.
   }, [user, isLoading, segments]);
 
   return (
@@ -37,7 +36,11 @@ const InitialLayout = () => {
       <Stack.Screen name="index" options={{ animation: 'fade' }} />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(auth)" />
-      <Stack.Screen 
+      <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: 'modal'}} />
+      {/*Look at the hassle of repeating pages route groups like tha above saves us from.
+      Imagine if we had to list EVERY SINGLE MODAL PAGE LIKE SO! * This is instead done 
+      in each route group's respective _layout.jsx*/}
+      {/*  <Stack.Screen 
         name="(modals)/add_products" 
         options={{ 
           presentation: 'modal', 
@@ -45,10 +48,32 @@ const InitialLayout = () => {
           headerShown: true 
         }} 
       />
+      <Stack.Screen 
+        name="(modals)/add_edu" 
+        options={{ 
+          presentation: 'modal', 
+          headerTitle: 'Add Educational Content',
+          headerShown: true 
+        }} 
+      />
+      <Stack.Screen 
+        name="(modals)/geuza_password" 
+        options={{ 
+          presentation: 'modal', 
+          headerTitle: 'Change Password Here',
+          headerShown: true 
+        }} 
+      />*/}
+
+    
     </Stack>
   );
 };
 
+
+//Notice we embed the InitialLayout above into a SafeAreaProvider
+//which just helps with putting all components within the confines
+//of one's phone's dimensions without overflow
 export default function RootLayout() {
   return (
     <SafeAreaProvider>

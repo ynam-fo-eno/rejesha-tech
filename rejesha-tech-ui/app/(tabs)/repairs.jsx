@@ -78,7 +78,9 @@ export default function Repairs() {
 
   const handleGemini = async () => {
     if (!issue_description && !deviceImage) {
-      themedAlert("Missing Info", "Please provide a description or a photo of the issue for the AI to analyze.");
+      themedAlert("Missing Info", "Please provide a description or a photo of the issue for the AI to analyze.",[
+          { text: "OK", style: "/" },
+        ]);
       return;
     }
 
@@ -106,7 +108,9 @@ export default function Repairs() {
       setAiModalVisible(true);
     } catch (error) {
       console.error("Gemini Error:", error);
-      themedAlert("AI System Offline", "Failed to retrieve diagnosis. Check network or API key permissions.");
+      themedAlert("AI System Offline", "Failed to retrieve diagnosis. Check network or API key permissions.",[
+          { text: "OK", style: "/" },
+        ]);
     } finally {
       setIsAiLoading(false);
     }
@@ -114,7 +118,9 @@ export default function Repairs() {
 
   const handleInitialSend = () => {
     if (!deviceImage || !issue_description || !village_name || !landmark) {
-      themedAlert("Missing Info", "Please provide a photo, description, and location.");
+      themedAlert("Missing Info", "Please provide a photo, description, and location.",[
+          { text: "OK", style: "/" },
+        ]);
       return;
     }
     setModalVisible(true);
@@ -177,11 +183,15 @@ export default function Repairs() {
         setLandmark('');
         setAiDiagnosis(''); 
         
-        themedAlert("Success", "Repair request logged! Technician notified.");
+        themedAlert("Success", "Repair request logged! Technician notified.",[
+          { text: "OK", style: "/" },
+        ]);
         setTimeout(() => router.back(), 1500);
       }
     } catch (error) {
-      themedAlert("Error", "Check Cloudinary preset or Internet connection.");
+      themedAlert("Error", "Check Cloudinary preset or Internet connection.",[
+          { text: "OK", style: "/" },
+        ]);
     } finally {
       setLoading(false);
     }
@@ -370,7 +380,7 @@ const styles = StyleSheet.create({
   aiBtn: { flex: 0.48, padding: 15, borderRadius: 12, alignItems: 'center', backgroundColor: "#2e7d32" }, 
   techBtn: { flex: 0.48, backgroundColor: "rgb(15, 120, 185)", padding: 15, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   viewAiBtn: { backgroundColor: '#005b96', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6, alignSelf: 'flex-start' },
-  btnTextWhite: { color: '#fff', fontWeight: 'bold' },
+  btnTextWhite: { color: '#120606', fontWeight: 'bold' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { width: '85%', borderRadius: 20, padding: 20 },
   modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },

@@ -6,6 +6,7 @@ import Head from 'expo-router/head';
 import { useTheme } from '../../context/ThemeContext';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../hooks/useAuth';
+import Spacer from '../../components/Spacer';
 import ThemedLoader from '../../components/ThemedLoader';
 import { BASE_URL } from '../../constants/config';
 import { Colors } from '../../constants/Colors';
@@ -26,13 +27,21 @@ const onRefresh = async () => {
   setRefreshing(false);
 };
 
-  // 1. DEFINE THE ADMIN LOGIC
+  // Next few determine who sees what buttons if they're supposed to
   const isAdmin = user?.role1 === 'Technician';
 
   // 2. DEFINE THE NAVIGATION LOGIC
   const handleAddProduct = () => {
     router.push('/(modals)/add_products'); 
   };
+
+  const isTeacher = (user?.role1 === 'Teacher' || user?.role2 === 'Teacher' );
+
+  const handleAddContent = () => {
+    router.push('/(modals)/add_edu'); 
+  };
+
+  const isBoth = isAdmin && isTeacher;
 
   const fetchProducts = async () => {
     try {
@@ -143,10 +152,22 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
       {/* --- FLOATING ACTION BUTTON --- */}
       {isAdmin && (
         <TouchableOpacity 
-          style={[styles.fab, { backgroundColor: Colors.primary }]} 
+          style={[styles.fab, { backgroundColor: Colors.primary },isBoth && { bottom: 90 }]} 
           onPress={handleAddProduct}
         >
           <MaterialCommunityIcons name="plus" size={30} color="#fff" />
+        </TouchableOpacity>
+      )}
+
+      <Spacer></Spacer>
+
+       {/* --- Another floating button shpuld you have role1 or role2 as a teacher--- */}
+      { isTeacher && (
+        <TouchableOpacity 
+          style={[styles.fab, { backgroundColor: "#1f9635" }]} 
+          onPress={handleAddContent}
+        >
+          <MaterialCommunityIcons name="file-video" size={30} color="#fff" />
         </TouchableOpacity>
       )}
     </View>

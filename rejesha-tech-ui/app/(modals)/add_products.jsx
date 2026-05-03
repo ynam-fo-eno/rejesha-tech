@@ -8,6 +8,8 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../hooks/useAuth';
 import VideoComponent from '../../components/VideoComponent';
 import { Colors } from '../../constants/Colors';
+import themedAlert from "../../components/ThemedAlert";
+import { BASE_URL } from '../../constants/config';
 
 export default function AddProductModal() {
   const { colors, isDarkMode } = useTheme();
@@ -21,12 +23,104 @@ export default function AddProductModal() {
   const initialForm = { pName: '', pAbout: '', price: '', category: '', stock_qty: '1' };
   const [form, setForm] = useState(initialForm);
 
+  // It shall be noted that this function handles the heavy lifting of sending our 
+  // form data and base64 image string to the backend, which will then relay the image 
+  // to Cloudinary before saving the URLs to our Aiven database.
+  const handleListProduct = async () => {
+    if (!form.pName || !form.price || !base64Image) {
+      themedAlert("Incomplete", "Please provide a name, price, and an image at minimum.", [
+        { text: "OK", style: "cancel" }
+      ]);
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/api/products/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          imageBase64: base64Image,
+          fundi_id: user?.id 
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        themedAlert("Upload Failed", data.message || "An error occurred", [
+          { text: "OK", style: "cancel" }
+        ]);
+        setLoading(false);
+        return;
+      }
 
-  const handleReset = () => {
+      themedAlert("Success", "Product listed successfully on RejeshaTech!", [
+        { text: "OK", style: "cancel" }
+      ]);
+      setForm(initialForm);
+      setImage(null);
+      setBase64Image(null);
+    } catch (error) {
+      console.error(error);
+      themedAlert("Network Error", "Cannot connect to server. Check your internet.", [
+        { text: "OK", style: "cancel" }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Because it involves actual deletion from our primary database table, 
+  // this function specifically looks at the Product Name typed into the form 
+  // to identify which record to strike from the system.
+  const handleSimpleDelete = async () => {
+    if (!form.pName) {
+      themedAlert("Wait a minute...", "Please type the exact Product Name above that you wish to delete.", [
+        { text: "OK", style: "cancel" }
+      ]);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/products/delete_one`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pName: form.pName }),
+      });
+      
+      if (response.ok) {
+        themedAlert("Deleted", `The product ${form.pName} has been removed.`, [
+          { text: "OK", style: "cancel" }
+        ]);
+        setForm(initialForm);
+      }
+    } catch (error) {
+      console.error(error);
+      themedAlert("Error", "Could not reach the server to delete.", [
+        { text: "OK", style: "cancel" }
+      ]);
+    }
+  };
+
+  // This is the cornerstone of our Easter egg logic! It resets the form state, 
+  // triggers the legendary 'Tunaanza Upya' meme video, and simultaneously 
+  // sends a request to the backend to truncate the dummy_products table.
+  const handleReset = async () => {
     setForm(initialForm);
     setImage(null);
     setBase64Image(null);
-    setShowVideo(true); // Pop the video!
+    setShowVideo(true); 
+
+    try {
+      await fetch(`${BASE_URL}/api/products/reset_dummy`, {
+        method: 'DELETE',
+      });
+      console.log("Dummy products table cleared successfully.");
+    } catch (error) {
+      console.error("Failed to clear dummy products:", error);
+    }
   };
 
   const pickImage = async () => {
@@ -40,7 +134,7 @@ export default function AddProductModal() {
   };
 
   return (
-      <ScrollView contentContainerStyle={styles.scrollContainer}keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
       
         <Modal visible={showVideo} transparent={true} animationType="fade">
           <View style={styles.modalOverlay}>
@@ -54,22 +148,28 @@ export default function AddProductModal() {
           </View>
         </Modal>
 
-        {/* ... Rest of your Image Picker and Form Code ... */}
         <TouchableOpacity style={[styles.imagePlaceholder, { backgroundColor: colors.card, borderColor: colors.primary }]} onPress={pickImage}>
             {image ? <Image source={{ uri: image }} style={styles.selectedImage} /> : <MaterialCommunityIcons name="camera-plus" size={40} color={Colors.primary} />}
         </TouchableOpacity>
 
         <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Product Name" value={form.pName} onChangeText={(v) => setForm({...form, pName: v})} />
-        {/* Add your other inputs here ... */}
+        <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Product Description" value={form.pAbout} onChangeText={(v) => setForm({...form, pAbout: v})} />
+        <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Cost (ideally KES)" value={form.price} onChangeText={(v) => setForm({...form, price: v})} />
+        <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Category (e.g. Laptops)" value={form.category} onChangeText={(v) => setForm({...form, category: v})} />
+        <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Quantity in Stock" value={form.stock_qty} onChangeText={(v) => setForm({...form, stock_qty: v})} />
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.submitBtn, { backgroundColor: Colors.primary }]} onPress={() => Alert.alert("Success", "Listed!")}>
-            <Text style={styles.btnText}>List Product</Text>
+          <TouchableOpacity style={[styles.submitBtn, { backgroundColor: Colors.primary }]} onPress={handleListProduct}>
+            <Text style={styles.btnText}>{loading ? "Listing..." : "List Product"}</Text>
+          </TouchableOpacity>
+            <TouchableOpacity style={[styles.resetBtn,{ backgroundColor: Colors.primary }]} onPress={handleSimpleDelete}>
+            <MaterialCommunityIcons name="delete" size={20} color="#ffffff" />
+            <Text style={[styles.resetText]}>Delete One</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.resetBtn,{ backgroundColor: Colors.primary }]} onPress={handleReset}>
             <MaterialCommunityIcons name="refresh" size={20} color="#ffffff" />
-            <Text style={[styles.resetText]}>Reset Products</Text>
+            <Text style={[styles.resetText]}>Reset ALL</Text>
           </TouchableOpacity>
         </View>
         <View style={{ height: 40 }} />

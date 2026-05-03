@@ -1,14 +1,20 @@
 import {Link,router} from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Logo from "../../assets/img/alt-rejesha-tech-logo.png"; 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
 import { BASE_URL } from "../../constants/config";
 import themedAlert from '../../components/ThemedAlert';
 
+
+/*
+Mysteriously putting this within our Register function caused an infinite loop error.
+Though this will be further investigated... anyway this is the array that stores the 
+choice of the dropdown menu you will shortly see 
+ */
 
 const roleOptions = [
   { label: 'Client', value: 'Client' },    
@@ -18,6 +24,8 @@ const roleOptions = [
 
 
 const Register = () =>  {
+ //A common  hook used to store the current state of a given component/value and the 
+ // function that will adjust it when invoked as the page runs.  
 const [form, setForm] = useState({
     fName: "",
     lName: "",
@@ -26,22 +34,30 @@ const [form, setForm] = useState({
     password: "",
   });
 
-  // NEW: State for real-time error messages
+  // This is what checks later on if there are numbers in the real gov't names
+  //of the registering user.
   const [errors, setErrors] = useState({
     fName: "",
     lName: "",
   });
 
+
+  //For password
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  // NEW: State for roles
+  // For roles- this is one of the cornerstones
+  //of the robust Role-Based Access Control (RBAC) 
+  // this app's v1 boasts.
   const [role1, setRole1] = useState(null);
   const [role2, setRole2] = useState(null);
 
+  //This checkfor the erroneous name input earlier discussed and
+  // if sensed defines setErrors accordingly else lets user move 
+  // to the next field 
   const validateName = (text, field) => {
     const nameRegex = /^[a-zA-Z\s]*$/; // Matches only letters and spaces
     if (!nameRegex.test(text)) {
@@ -52,8 +68,17 @@ const [form, setForm] = useState({
     setForm({ ...form, [field]: text });
   };
 
+//This function ensures: 
+// 1. No field is empty 
+// 2. The erors in real first and last names 
+// 3. Fetches all the complete data into the response 
+// when fully validated. Corresponding alerts based on 
+// the standard status codes (200 if all good, 404 if 
+// user not in db) are tailored accordingly by our custom 
+// themedAlert component. 
+
+
 const handleRegister = async () => {
-  // 1. Validation (Added lName and fName checks)
   if (!form.fName || !form.lName || !form.username || !form.email || !form.password || !role1) {
     themedAlert("Error", "Please fill all required fields (including Main Role)",
          [
@@ -117,7 +142,7 @@ const handleRegister = async () => {
   }
 };
 
-
+//This is the form we display to the user to register.
   return (
     <ScrollView>
     <SafeAreaProvider>
@@ -157,7 +182,7 @@ const handleRegister = async () => {
           </View>
 
           <View style = {styles.input}>
-            <Text style = {styles.inputLabel}>username</Text>
+            <Text style = {styles.inputLabel}>Username</Text>
             <TextInput
               style = {styles.inputControl}
               placeholder = "Enter username(case sensitive!)"
@@ -187,23 +212,23 @@ const handleRegister = async () => {
               placeholder = "Enter password"
               placeholderTextColor= "#929292"
               autoCapitalize="none"
-              secureTextEntry={isPasswordVisible} // Bind the state here
+              secureTextEntry={isPasswordVisible} 
               value = {form.password}
               onChangeText={password => setForm({...form,password})}
             />
             <Pressable onPress={togglePasswordVisibility} style={styles.visibilityBtn}>
               <MaterialCommunityIcons
-                name={isPasswordVisible ? 'eye-off' : 'eye'} // Change icon based on state
+                name={isPasswordVisible ? 'eye-off' : 'eye'} 
                 size={16}
                 color="#232323"
               />
             </Pressable>
           </View>
 
-            {/* DROPDOWN 1 */}
+            {/* DROPDOWN for user's primary role */}
       <View style={styles.dropDownContainer}>
         <Dropdown
-          style={styles.dropdown} // Removed the isFocus conditional style
+          style={styles.dropdown} 
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           data={roleOptions} // Using the array from outside
@@ -216,7 +241,7 @@ const handleRegister = async () => {
         />
       </View>
 
-      {/* DROPDOWN 2 */}
+      {/* DROPDOWN for user's secondary role*/}
       <View style={styles.dropDownContainer}>
         <Dropdown
           style={styles.dropdown}
@@ -253,8 +278,9 @@ const handleRegister = async () => {
   );
 }
 
-export default Register
+export default Register;
 
+//These of course are simply stylings for each UI component
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,

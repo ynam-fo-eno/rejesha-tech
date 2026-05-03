@@ -19,8 +19,6 @@ const Product = {
   },
 
   getAll: async () => {
-    // This JOIN pulls the username from the 'users' table 
-    // based on the 'fundi_id' in the 'products' table.
     const query = `
       SELECT p.*, u.username AS fundi_name 
       FROM products p 
@@ -29,9 +27,22 @@ const Product = {
     `;
     const [rows] = await db.execute(query);
     return rows;
+  },
+
+  // This is what checks for the target product name in our primary 'products' 
+  // table. We use LIMIT 1 as the ultimate "Anti-Crash" logic to ensure we don't 
+  // accidentally delete multiple products sharing a generic name!
+  deleteByName: async (pName) => {
+    const query = `DELETE FROM products WHERE pName = ? LIMIT 1`;
+    return await db.execute(query, [pName]);
+  },
+
+  // As expected for our joke feature, this bypasses the main tables entirely 
+  // and issues a direct DELETE command to clear out the dummy_products storage.
+  resetDummy: async () => {
+    const query = `DELETE FROM dummy_products`;
+    return await db.execute(query);
   }
-
-
 };
 
 module.exports = Product;
