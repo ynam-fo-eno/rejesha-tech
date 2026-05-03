@@ -10,6 +10,8 @@ import VideoComponent from '../../components/VideoComponent';
 import { Colors } from '../../constants/Colors';
 import themedAlert from "../../components/ThemedAlert";
 import { BASE_URL } from '../../constants/config';
+import { Dropdown } from 'react-native-element-dropdown';
+import { useEffect } from 'react';
 
 export default function AddProductModal() {
   const { colors, isDarkMode } = useTheme();
@@ -23,6 +25,25 @@ export default function AddProductModal() {
   const initialForm = { pName: '', pAbout: '', price: '', category: '', stock_qty: '1' };
   const [form, setForm] = useState(initialForm);
 
+  useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/products/all`);
+      const data = await response.json();
+      
+      // Format the data so the Dropdown can read it (needs 'label' and 'value')
+      const formattedData = data.map(item => ({
+        label: item.pName,
+        value: item.pName // Or item.id if you switch to deleting by ID later!
+      }));
+      setAvailableProducts(formattedData);
+    } catch (error) {
+      console.error("Could not load products for deletion list", error);
+    }
+  };
+  
+  fetchProducts();
+}, []);
   // It shall be noted that this function handles the heavy lifting of sending our 
   // form data and base64 image string to the backend, which will then relay the image 
   // to Cloudinary before saving the URLs to our Aiven database.
@@ -76,33 +97,31 @@ export default function AddProductModal() {
   // this function specifically looks at the Product Name typed into the form 
   // to identify which record to strike from the system.
   const handleSimpleDelete = async () => {
-    if (!form.pName) {
-      themedAlert("Wait a minute...", "Please type the exact Product Name above that you wish to delete.", [
-        { text: "OK", style: "cancel" }
-      ]);
-      return;
-    }
+  if (!productToDelete) {
+    themedAlert("Wait a minute...", "Please select a product from the dropdown to delete.", [
+      { text: "OK", style: "cancel" }
+    ]);
+    return;
+  }
 
-    try {
-      const response = await fetch(`${BASE_URL}/api/products/delete_one`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pName: form.pName }),
-      });
-      
-      if (response.ok) {
-        themedAlert("Deleted", `The product ${form.pName} has been removed.`, [
-          { text: "OK", style: "cancel" }
-        ]);
-        setForm(initialForm);
-      }
-    } catch (error) {
-      console.error(error);
-      themedAlert("Error", "Could not reach the server to delete.", [
+  try {
+    const response = await fetch(`${BASE_URL}/api/products/delete_one`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pName: productToDelete }),
+    });
+    
+    if (response.ok) {
+      themedAlert("Deleted", `The product ${productToDelete} has been removed.`, [
         { text: "OK", style: "cancel" }
       ]);
+      setProductToDelete(null); // Clear the dropdown
+      // Optional: Re-run fetchProducts() here to refresh the list!
     }
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   // This is the cornerstone of our Easter egg logic! It resets the form state, 
   // triggers the legendary 'Tunaanza Upya' meme video, and simultaneously 
@@ -158,6 +177,19 @@ export default function AddProductModal() {
         <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Category (e.g. Laptops)" value={form.category} onChangeText={(v) => setForm({...form, category: v})} />
         <TextInput style={[styles.input, { backgroundColor: colors.card, color: colors.text }]} placeholder="Quantity in Stock" value={form.stock_qty} onChangeText={(v) => setForm({...form, stock_qty: v})} />
 
+        {/* The Delete Dropdown */}
+        <Dropdown
+          style={[styles.input, { backgroundColor: colors.card, borderColor: 'red', borderWidth: 1 }]}
+          placeholderStyle={{ color: colors.text }}
+          selectedTextStyle={{ color: colors.text }}
+          data={availableProducts}
+          maxHeight={200}
+          labelField="label"
+          valueField="value"
+          placeholder="Select a product to delete..."
+          value={productToDelete}
+          onChange={item => setProductToDelete(item.value)}
+        />
         <View style={styles.buttonRow}>
           <TouchableOpacity style={[styles.submitBtn, { backgroundColor: Colors.primary }]} onPress={handleListProduct}>
             <Text style={styles.btnText}>{loading ? "Listing..." : "List Product"}</Text>
