@@ -8,7 +8,8 @@ router.post('/list', productController.listNewProduct);
 // This "Door" lets you fetch all products for your app's home screen
 router.get('/all', productController.getProducts);
 
-// Add these below your existing routes in productRoutes.js
+// For product mgmt
+router.post('/add', productController.listNewProduct);
 router.delete('/delete_one', productController.deleteOneProduct);
 router.delete('/reset_dummy', productController.resetDummyProducts);
 

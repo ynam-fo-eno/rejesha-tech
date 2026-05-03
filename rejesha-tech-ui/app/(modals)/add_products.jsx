@@ -24,6 +24,8 @@ export default function AddProductModal() {
 
   const initialForm = { pName: '', pAbout: '', price: '', category: '', stock_qty: '1' };
   const [form, setForm] = useState(initialForm);
+  const [availableProducts, setAvailableProducts] = useState([]);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
   const fetchProducts = async () => {
