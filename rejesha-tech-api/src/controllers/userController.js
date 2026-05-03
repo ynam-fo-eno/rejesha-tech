@@ -39,7 +39,7 @@ exports.updateProfilePicture = async (req, res) => {
 
     // 3. Upload to Cloudinary
     const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
-      folder: 'rejesha_profiles',
+      folder: 'rejesha_uploads',
     });
     
     const imageUrl = uploadResponse.secure_url;
