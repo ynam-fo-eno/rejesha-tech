@@ -45,5 +45,49 @@ If you are cloning this to run locally, please learn from my misadventures. Envi
 
    
 2. **Backend .env (rejesha-tech-api)**
-1. **Clone & Install:**
-1. **Clone & Install:**
+    Create a .env file in the rejesha-tech-api folder.
+
+    Code snippet
+    DB_HOST=your_aiven_host
+    DB_USER=your_aiven_user
+    DB_PASSWORD=your_aiven_password
+    DB_NAME=db1
+    PORT=5000
+    CLOUDINARY_UPLOAD_PRESET=rejesha_tech_products
+    # ... add your Cloudinary keys here
+3. **Frontend .env (rejesha-tech-ui) - CRITICAL :**
+    Create a .env file in the rejesha-tech-ui folder. In Expo, your variables MUST start with EXPO_PUBLIC_ or the frontend will silently ignore them and throw a 404!
+
+    Code snippet
+    EXPO_PUBLIC_BASE_URL=http://localhost:5000 
+    # Change to your Render URL when deploying!
+    Run the App:
+
+    Bash
+    # Terminal 1 (API)
+    npm start
+
+    # Terminal 2 (UI)
+    npx expo start
+4. **Successful Features of v1**
+    Flawless Cross-Platform Routing: Heavy use of Expo's (tabs), (auth), and (modals) route groups keeps the layout clean while delivering perfect slide-up animations on mobile and forced back-arrows on the web.
+
+    Role-Based Access Control: Users register their Primary and Secondary roles (Client, Technician, or Teacher). The app dictates what they can view and edit based on this.
+
+    Cloudinary Integration: Technicians can upload images of parts directly from their phone gallery, which are securely hosted and linked to our Aiven database.
+
+    The "Tunaanza Upya" Easter Egg: A custom reset modal that triggers a legendary meme video while silently truncating the dummy database tables.
+
+5. **Features That Fell Short (For Now)**
+    Let's be honest, no v1 is perfect. Here is what is slated for v2 (hopefully before graduation in November!):
+
+    True Password Resets: Currently, the "Forgot Password" UI is beautifully routed, but the actual backend email-verification logic is missing. It just pops a "Coming Soon" alert and safely routes you back to login.
+
+    Live AI Image Diagnostics: Getting the Gemini API to consistently and accurately diagnose a bloated Realme battery from a blurry user photo is harder than it looks. The text-based diagnostics work, but the image-recognition portion needs more prompt engineering.
+
+    Dynamic Maps: The UI is ready, but fully integrating the Google Maps SDK to trace exact GPS coordinates of nearby fundis proved to be out of scope for the current deadline.
+
+6. **Acknowledgements**
+    Massive thanks to my supervisor, Dr. Joshua Okemwa, for the guidance, and to the team at Suetech Business Systems for the attachment experience that birthed this idea.
+
+    To the Daystar panel reviewing this: Thank you for your time. Enjoy the app!
