@@ -36,7 +36,7 @@ export default function AddProductModal() {
       // Format the data so the Dropdown can read it (needs 'label' and 'value')
       const formattedData = data.map(item => ({
         label: item.pName,
-        value: item.pName // Or item.id if you switch to deleting by ID later!
+        value: item.pName 
       }));
       setAvailableProducts(formattedData);
     } catch (error) {

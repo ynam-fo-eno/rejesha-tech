@@ -31,7 +31,7 @@ const onRefresh = async () => {
   // Next few determine who sees what buttons if they're supposed to
   const isAdmin = user?.role1 === 'Technician';
 
-  // 2. DEFINE THE NAVIGATION LOGIC
+
   const handleAddProduct = () => {
     router.push('/(modals)/add_products'); 
   };
@@ -46,7 +46,7 @@ const onRefresh = async () => {
 
   const fetchProducts = async () => {
     try {
-      // Ensure this IP matches your PC's current IP on your Wi-Fi!
+  
       const response = await fetch(`${BASE_URL}/api/products/all`);
       const data = await response.json();
       setProducts(data);
@@ -61,7 +61,6 @@ const onRefresh = async () => {
     fetchProducts();
   }, []);
 
-  // FIX: Watch the 'L' in toLowerCase()
 const filteredProducts = Array.isArray(products) ? products.filter((product) =>
   product.pName?.toLowerCase().includes(searchQuery.toLowerCase())
 ) : [];
@@ -137,7 +136,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
                 {item.pName}
               </Text>
               <Text style={[styles.productCategory, { color: colors.grey }]}>
-                {item.category}
+                {item.category} | Number left: {item.stock_qty}
               </Text>
               <Text style={[styles.productPrice, { color: "#00E5FF" }]}>
                 Ksh {parseFloat(item.price).toLocaleString()}
