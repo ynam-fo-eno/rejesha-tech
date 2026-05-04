@@ -286,13 +286,6 @@ const uploadToBackend = async (base64) => {
 
         </View>
 
-        <View style={styles.infoRow}>
-
-          <MaterialCommunityIcons name="calendar-clock" size={20} color={brandCyan} />
-
-          <Text style={[styles.infoText, { color: colors.text }]}>Joined April 2026</Text>
-
-        </View>
 
       </View>
 

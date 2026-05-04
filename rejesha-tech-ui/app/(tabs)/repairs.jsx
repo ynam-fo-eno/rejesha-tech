@@ -242,6 +242,7 @@ export default function Repairs() {
                   AI Notes: N/A
                 </Text>
               )}
+              <Text style={{ color: colors.grey, marginBottom: 8 }}>{item.created_at}</Text>
             </View>
           </View>
         )}
