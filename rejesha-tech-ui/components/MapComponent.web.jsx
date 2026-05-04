@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function MapComponent() {
   return (
     <View style={styles.webPlaceholder}>
-      <Text style={styles.text}>🗺️ Map view is optimized for Mobile devices.</Text>
+      <Text style={styles.text}>Apologies, map view is optimized for mobile devices.</Text>
     </View>
   );
 }

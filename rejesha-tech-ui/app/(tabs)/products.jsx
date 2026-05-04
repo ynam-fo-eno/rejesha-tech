@@ -10,6 +10,7 @@ import Spacer from '../../components/Spacer';
 import ThemedLoader from '../../components/ThemedLoader';
 import { BASE_URL } from '../../constants/config';
 import { Colors } from '../../constants/Colors';
+import themedAlert from '../../components/ThemedAlert';
 
 
 
@@ -94,6 +95,14 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
   </View>
 );
 
+  const handleOrder = () => (
+   themedAlert("Payment Integration Pending", "Payment and M-Pesa to be integrated, but coming soon!",
+         [
+          { text: "OK", style: "/" },
+        ]
+    )
+  );
+
   if (loading) {
     return <ThemedLoader />;
   }
@@ -142,7 +151,7 @@ const filteredProducts = Array.isArray(products) ? products.filter((product) =>
               )}
             </View>
 
-            <TouchableOpacity style={[styles.viewBtn, { backgroundColor:"#00E5FF"+ '20' }]}>
+            <TouchableOpacity style={[styles.viewBtn, { backgroundColor:"#00E5FF"+ '20' }]} onPress={handleOrder}>
               <Text style={[styles.viewBtnText, { color: "#00E5FF" }]}>View</Text>
             </TouchableOpacity>
           </View>
